@@ -4,16 +4,31 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import robotx.stx_libraries.drive.MecanumDrive;
 
+/**
+ * AutonTuner class
+ * <p>
+ * Custom class by FTC Team 4969 RobotX for tuning auton drive distances.
+ * <p>
+ * Created by John Daniher on 2/6/2025.
+ */
 public class AutonTuner extends MecanumDrive {
-    /**
-     * The time, in milliseconds, being tested for the robot to drive the length of 1 tile.
-     */
+    /// The time, in milliseconds, being tested for the robot to drive the length of 1 tile.
     public int tileTime = 300;
-    /**
-     * The unit at which the tileTime scales by on change.
-     */
+
+    /// The time, in milliseconds, being tested for the robot to turn 360 degrees.
+    public int turnTime = 300;
+
+    /// Toggle for turning mode.
+    public boolean turning = false;
+
+    /// The unit at which the tileTime scales by on change.
     public int unit = 10;
 
+    /**
+     * Basic AutonTuner Module.
+     *
+     * @param op The OpMode the AutonTuner Module is created in.
+     */
     public AutonTuner(OpMode op) {
         super(op);
     }
@@ -25,8 +40,17 @@ public class AutonTuner extends MecanumDrive {
      */
     @Override
     public void loop() {
-        opMode.telemetry.addData("Controls", "\nA: Drive\nD-Pad Left: Unit / 10\nD-Pad Right: Unit * 10\nD-Pad Up: TileTime+\nD-Pad Down: TileTime-\n");
-        opMode.telemetry.addData("TileTime: ", tileTime + " ms");
+        if (turning) {
+            opMode.telemetry.addData("Controls", "\nB: Toggle Drive\nA: Turn\nD-Pad Left: Unit / 10\nD-Pad Right: Unit * 10\nD-Pad Up: TurnTime+\nD-Pad Down: TurnTime-\n");
+        } else {
+            opMode.telemetry.addData("Controls", "\nB: Toggle Turn\nA: Drive\nD-Pad Left: Unit / 10\nD-Pad Right: Unit * 10\nD-Pad Up: TileTime+\nD-Pad Down: TileTime-\n");
+        }
+        if (turning) {
+            opMode.telemetry.addData("TurnTime: ", turnTime + " ms");
+        } else {
+            opMode.telemetry.addData("TileTime: ", tileTime + " ms");
+
+        }
         opMode.telemetry.addData("Unit: ", unit + " ms");
 
         super.loop();
@@ -41,12 +65,23 @@ public class AutonTuner extends MecanumDrive {
     public void control_loop() {
         // Checks controls for tileTime changes.
         if (xGamepad1.dpad_up.wasPressed()) {
-            tileTime += unit;
+            if (turning) {
+                turnTime += unit;
+            } else {
+                tileTime += unit;
+            }
         }
         if (xGamepad1.dpad_down.wasPressed()) {
-            tileTime -= unit;
-            if (tileTime < 0) {
-                tileTime = 1;
+            if (turning) {
+                turnTime -= unit;
+                if (turnTime < 0) {
+                    turnTime = 1;
+                }
+            } else {
+                tileTime -= unit;
+                if (tileTime < 0) {
+                    tileTime = 1;
+                }
             }
         }
 
@@ -64,9 +99,17 @@ public class AutonTuner extends MecanumDrive {
             }
         }
 
+        if (xGamepad1.b.wasPressed()) {
+            turning = !turning;
+        }
+
         // Check controls for run start.
         if (xGamepad1.a.wasPressed()) {
-            drive(1);
+            if (turning) {
+                rotate(1);
+            } else {
+                drive(1);
+            }
             // Schedules stop in tileTime milliseconds
             scheduler.schedule(tileTime, this::stopMotors);
         }

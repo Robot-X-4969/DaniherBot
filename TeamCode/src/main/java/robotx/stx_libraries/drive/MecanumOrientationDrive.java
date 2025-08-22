@@ -3,6 +3,7 @@ package robotx.stx_libraries.drive;
 import com.qualcomm.hardware.bosch.BHI260IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -17,7 +18,7 @@ import robotx.stx_libraries.XModule;
  * <p>
  * Custom class by FTC Team 4969 RobotX for better control of driving using device IMU.
  * <p>
- * Created by Nicholas on 11/3/16.
+ * Created by Nicholas Reichert on 11/3/16.
  */
 public class MecanumOrientationDrive extends XModule {
     /**
@@ -29,32 +30,20 @@ public class MecanumOrientationDrive extends XModule {
         super(op);
     }
 
-    /**
-     * The front-left motor of the drive train.
-     */
+    /// The front-left motor of the drive train.
     public DcMotor frontLeft;
-    /**
-     * The front-right motor of the drive train.
-     */
+    /// The front-right motor of the drive train.
     public DcMotor frontRight;
-    /**
-     * The back-right motor of the drive train.
-     */
+    /// The back-right motor of the drive train.
     public DcMotor backRight;
-    /**
-     * The back-left motor of the drive train.
-     */
+    /// The back-left motor of the drive train.
     public DcMotor backLeft;
 
     private BHI260IMU gyroSensor;
     private Orientation lastAngles = new Orientation();
-    /**
-     * The angle at which the robot is currently rotated in respect to the field (globe)
-     */
+    /// The angle at which the robot is currently rotated in respect to the field (globe)
     public double globalAngle;
-    /**
-     * The angle at which the robot is currently rotated in respect to its set orientation angle.
-     */
+    /// The angle at which the robot is currently rotated in respect to its set orientation angle.
     public double robotAngle;
     private double joystickAngle;
 
@@ -65,9 +54,7 @@ public class MecanumOrientationDrive extends XModule {
     private final Stopwatch rotationStopwatch = new Stopwatch();
     private double targetAngle = 0;
 
-    /**
-     * Toggle on whether or not orientation mode is active.
-     */
+    /// Toggle on whether or not orientation mode is active.
     public boolean orientationMode = true;
     private double offset = 0;
 
@@ -84,14 +71,10 @@ public class MecanumOrientationDrive extends XModule {
      */
     public boolean superSlowMode = false;
 
-    /**
-     * The current percent power of the motors, ranging -1 to 1.
-     */
+    /// The current percent power of the motors, ranging -1 to 1.
     public double power = 0.75;
 
-    /**
-     * Initialization function. This method, by default, initializes the motors and gyroSensor
-     */
+    /// Initialization function. This method, by default, initializes the motors and gyroSensor
     @Override
     public void init() {
         frontLeft = opMode.hardwareMap.dcMotor.get("frontLeft");
@@ -104,9 +87,7 @@ public class MecanumOrientationDrive extends XModule {
         gyroSensor.initialize();
     }
 
-    /**
-     * Toggles whether or not orientation mode is active.
-     */
+    /// Toggles whether or not orientation mode is active.
     public void toggleOrientation() {
         orientationMode = !orientationMode;
     }
@@ -131,17 +112,13 @@ public class MecanumOrientationDrive extends XModule {
         superSlowMode = !superSlowMode;
     }
 
-    /**
-     * Resets the saved orientation of the gyroSensor.
-     */
+    /// Resets the saved orientation of the gyroSensor.
     public void resetOrientation() {
         offset = globalAngle;
     }
 
-    /**
-     * Refreshes the variables tracking the joystick movements
-     */
-    public void refreshStick() {
+    /// Refreshes the variables tracking the joystick movements
+    public void refreshSticks() {
         x = xGamepad1.left_stick_x;
         y = xGamepad1.left_stick_y;
         r = xGamepad1.right_stick_x;
@@ -280,6 +257,11 @@ public class MecanumOrientationDrive extends XModule {
         }
     }
 
+    /**
+     * Rotates the robot until the IMU reads with 1 degree of a given angle.
+     *
+     * @param angle The angle to rotate the robot within 1 degree of.
+     */
     private void rotateByError(double angle){
         double margin = angle-robotAngle;
         if(margin < -180) {
@@ -299,11 +281,19 @@ public class MecanumOrientationDrive extends XModule {
         powerMotors(1);
     }
 
+    /// Stops all motors of the drive train.
     public void stopMotors(){
         x = 0;
         y = 0;
         r = 0;
         powerMotors(1);
+    }
+
+    /// Control loop function. By default, this reads joystick values.
+    @Override
+    public void control_loop() {
+        super.control_loop();
+        refreshSticks();
     }
 
     /**
@@ -322,7 +312,7 @@ public class MecanumOrientationDrive extends XModule {
             robotAngle = 0;
         }
 
-        if(!rotationStopwatch.timerDone()){
+        if(!rotationStopwatch.timerDone() && rotationStopwatch.timerStarted()){
             rotateByError(targetAngle);
         }
 

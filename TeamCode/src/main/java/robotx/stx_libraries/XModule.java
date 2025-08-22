@@ -13,28 +13,18 @@ import java.util.List;
  * Created by Nicholas on 11/3/16.
  */
 public abstract class XModule {
-    /**
-     * OpMode's instance.
-     */
+    /// OpMode's instance.
     public final OpMode opMode;
-    /**
-     * OpMode's scheduling object.
-     */
+    /// OpMode's scheduling object.
     public Scheduler scheduler;
-    /**
-     * XGamepad object for the primary OpMode gamepad.
-     */
+    /// XGamepad object for the primary OpMode gamepad.
     public XGamepad xGamepad1 = new XGamepad();
-    /**
-     * XGamepad object for the secondary OpMode gamepad.
-     */
+    /// XGamepad object for the secondary OpMode gamepad.
     public XGamepad xGamepad2 = new XGamepad();
 
     public boolean dualPlayer = true;
 
-    /**
-     * List of module's motors to be called every loop.
-     */
+    /// List of module's motors to be called every loop.
     public final List<XMotor> loopMotors = new ArrayList<>();
 
     /**
@@ -48,43 +38,32 @@ public abstract class XModule {
         opMode = op;
     }
 
-    /**
-     * Update method which refreshes xGamepad objects.
-     */
+    /// Update method which refreshes xGamepad objects.\
     public void update() {
         scheduler.loop();
         xGamepad1.update(opMode.gamepad1);
         xGamepad2.update(opMode.gamepad2);
     }
 
-    /**
-     * Method called on OpMode initialization.
-     */
+    /// Method called on OpMode initialization.
     public void init() {
         for(XMotor motor : loopMotors){
             motor.init();
         }
     }
 
-    /**
-     * Method called while awaiting OpMode start.
-     */
+    /// Method called while awaiting OpMode start.
     public void init_loop() {
         for (XMotor motor : loopMotors) {
             motor.loop();
         }
-        opMode.telemetry.update();
     }
 
-    /**
-     * Method called on OpMode start.
-     */
+    /// Method called on OpMode start.
     public void start() {
     }
 
-    /**
-     * Method which handles inputs.
-     */
+    /// Method which handles inputs.
     public void control_loop() {
         if(xGamepad1.back.wasPressed()){
             dualPlayer = !dualPlayer;
@@ -98,16 +77,13 @@ public abstract class XModule {
      */
     public void loop() {
         control_loop();
-        opMode.telemetry.update();
         for (XMotor motor : loopMotors) {
             motor.loop();
         }
     }
 
 
-    /**
-     * Method called on OpMode stop.
-     */
+    /// Method called on OpMode stop.
     public void stop() {
     }
 }

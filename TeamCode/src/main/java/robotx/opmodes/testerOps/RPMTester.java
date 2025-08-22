@@ -2,6 +2,7 @@ package robotx.opmodes.testerOps;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import robotx.modules.opmode.RPMMeasure;
 import robotx.stx_libraries.XOpMode;
 import robotx.stx_libraries.tuning.ConfigTester;
 
@@ -9,16 +10,16 @@ import robotx.stx_libraries.tuning.ConfigTester;
 // sample change
 
 
-@TeleOp(name = "ClawTester", group = "Tests")
-public class ClawTester extends XOpMode {
-    ConfigTester configTester;
+@TeleOp(name = "RPMTester", group = "Tests")
+public class RPMTester extends XOpMode {
+    RPMMeasure rpmMeasure;
 
     public void initModules() {
 
         super.initModules();
 
-        configTester = new ConfigTester(this, 0, 4);
-        activeModules.add(configTester);
+        rpmMeasure = new RPMMeasure(this);
+        activeModules.add(rpmMeasure);
     }
 
     public void init() {

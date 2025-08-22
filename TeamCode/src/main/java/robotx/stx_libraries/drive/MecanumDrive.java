@@ -20,21 +20,13 @@ public class MecanumDrive extends XModule {
      */
     public MecanumDrive(OpMode op) {super(op);}
 
-    /**
-     * The front-left motor of the drive train.
-     */
+    /// The front-left motor of the drive train.
     public DcMotor frontLeft;
-    /**
-     * The front-right motor of the drive train.
-     */
+    /// The front-right motor of the drive train.
     public DcMotor frontRight;
-    /**
-     * The back-right motor of the drive train.
-     */
+    /// The back-right motor of the drive train.
     public DcMotor backRight;
-    /**
-     * The back-left motor of the drive train.
-     */
+    /// The back-left motor of the drive train.
     public DcMotor backLeft;
 
     private double x;
@@ -59,9 +51,7 @@ public class MecanumDrive extends XModule {
      */
     public double power = 0.75;
 
-    /**
-     * Initialization function. This method, by default, initializes the motors
-     */
+    /// Initialization function. This method, by default, initializes the motors
     @Override
     public void init() {
         frontLeft = opMode.hardwareMap.dcMotor.get("frontLeft");
@@ -90,10 +80,8 @@ public class MecanumDrive extends XModule {
         superSlowMode = !superSlowMode;
     }
 
-    /**
-     * Refreshes the variables tracking the joystick movements
-     */
-    public void refreshStick() {
+    /// Refreshes the variables tracking the joystick movements
+    public void refreshSticks() {
         x = xGamepad1.left_stick_x;
         y = xGamepad1.left_stick_y;
         r = xGamepad1.right_stick_x;
@@ -148,11 +136,19 @@ public class MecanumDrive extends XModule {
         powerMotors(1);
     }
 
+    /// Stops all motors of the drive train.
     public void stopMotors(){
         x = 0;
         y = 0;
         r = 0;
         powerMotors(1);
+    }
+
+    /// Control loop function. By default, this reads joystick values.
+    @Override
+    public void control_loop() {
+        super.control_loop();
+        refreshSticks();
     }
 
     /**

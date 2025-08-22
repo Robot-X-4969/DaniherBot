@@ -6,16 +6,30 @@ import robotx.stx_libraries.XModule;
 import robotx.stx_libraries.XMotor;
 
 /**
+ * EncoderTester Class
+ * <p>
+ * Custom class by FTC Team 4969 RobotX for testing motor encoder positions.
+ * <p>
  * Created by John Daniher on 2/6/2025.
  */
 public class EncoderTester extends XModule {
+    /// Array of motor config paths
     private final String[] motorPaths;
 
+    /// Array of testing motors
     public final XMotor[] motors;
+    /// Current index of testing motors
     public int index = 0;
 
+    /// Unit to increment motor encoder positions by.
     public int unit = 10;
 
+    /**
+     * Basic EncoderTester Module.
+     *
+     * @param op The OpMode the EncoderTester Module is created in.
+     * @param motorPaths The array of motor config paths.
+     */
     public EncoderTester(OpMode op, String[] motorPaths) {
         super(op);
         this.motorPaths = motorPaths;
@@ -24,7 +38,11 @@ public class EncoderTester extends XModule {
             motors[i] = new XMotor(op, motorPaths[i]);
         }
     }
-
+    /**
+     * Method which runs on bot initialization.
+     * <p>
+     * Initializes all motors provided through motorPaths."
+     */
     @Override
     public void init(){
         for(XMotor motor : motors){
@@ -33,6 +51,11 @@ public class EncoderTester extends XModule {
         }
     }
 
+    /**
+     * Method which runs while opMode running.
+     * <p>
+     * Updates telemetry display for controls, motor index, and position.
+     */
     @Override
     public void loop(){
         opMode.telemetry.addData("Controls", "\nD-Pad Left: Unit / 10\nD-Pad Right: Unit * 10\nD-Pad Up: Position+\nD-Pad Down: Position-\nA: Cycle forwards through motors\nB: Cycle backwards through motors");
@@ -41,6 +64,11 @@ public class EncoderTester extends XModule {
         super.loop();
     }
 
+    /**
+     * Method which checks controller inputs.
+     * <p>
+     * Checks bumpers for unit changes, dpad for position changes, and a/b for motor swapping.
+     */
     @Override
     public void control_loop(){
         if(xGamepad1.left_bumper.wasPressed()){

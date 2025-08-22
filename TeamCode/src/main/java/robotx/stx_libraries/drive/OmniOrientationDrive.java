@@ -29,32 +29,20 @@ public class OmniOrientationDrive extends XModule {
         super(op);
     }
 
-    /**
-     * The front motor of the drive train.
-     */
+    /// The front motor of the drive train.
     public DcMotor front;
-    /**
-     * The right motor of the drive train.
-     */
+    /// The right motor of the drive train.
     public DcMotor right;
-    /**
-     * The back motor of the drive train.
-     */
+    /// The back motor of the drive train.
     public DcMotor back;
-    /**
-     * The left motor of the drive train.
-     */
+    /// The left motor of the drive train.
     public DcMotor left;
 
     private BHI260IMU gyroSensor;
     private Orientation lastAngles = new Orientation();
-    /**
-     * The angle at which the robot is currently rotated in respect to the field (globe)
-     */
+    /// The angle at which the robot is currently rotated in respect to the field (globe)
     public double globalAngle;
-    /**
-     * The angle at which the robot is currently rotated in respect to its set orientation angle.
-     */
+    /// The angle at which the robot is currently rotated in respect to its set orientation angle.
     public double robotAngle;
     private double joystickAngle;
 
@@ -65,9 +53,7 @@ public class OmniOrientationDrive extends XModule {
     private final Stopwatch rotationStopwatch = new Stopwatch();
     private double targetAngle = 0;
 
-    /**
-     * Toggle on whether or not orientation mode is active.
-     */
+    /// Toggle on whether or not orientation mode is active.
     public boolean orientationMode = true;
     private double offset = 0;
 
@@ -84,14 +70,10 @@ public class OmniOrientationDrive extends XModule {
      */
     public boolean superSlowMode = false;
 
-    /**
-     * The current percent power of the motors, ranging -1 to 1.
-     */
+    /// The current percent power of the motors, ranging -1 to 1.
     public double power = 0.75;
 
-    /**
-     * Initialization function. This method, by default, initializes the motors and gyroSensor
-     */
+    /// Initialization function. This method, by default, initializes the motors and gyroSensor
     @Override
     public void init() {
         front = opMode.hardwareMap.dcMotor.get("front");
@@ -104,9 +86,7 @@ public class OmniOrientationDrive extends XModule {
         gyroSensor.initialize();
     }
 
-    /**
-     * Toggles whether or not orientation mode is active.
-     */
+    /// Toggles whether or not orientation mode is active.
     public void toggleOrientation() {
         orientationMode = !orientationMode;
     }
@@ -131,17 +111,13 @@ public class OmniOrientationDrive extends XModule {
         superSlowMode = !superSlowMode;
     }
 
-    /**
-     * Resets the saved orientation of the gyroSensor.
-     */
+    /// Resets the saved orientation of the gyroSensor.
     public void resetOrientation() {
         offset = globalAngle;
     }
 
-    /**
-     * Refreshes the variables tracking the joystick movements
-     */
-    public void refreshStick() {
+    /// Refreshes the variables tracking the joystick movements.
+    public void refreshSticks() {
         x = xGamepad1.left_stick_x;
         y = xGamepad1.left_stick_y;
         r = xGamepad1.right_stick_x;
@@ -278,6 +254,11 @@ public class OmniOrientationDrive extends XModule {
         }
     }
 
+    /**
+     * Rotates the robot until the IMU reads with 1 degree of a given angle.
+     *
+     * @param angle The angle to rotate the robot within 1 degree of.
+     */
     private void rotateByError(double angle){
         double margin = angle-robotAngle;
         if(margin < -180) {
@@ -297,11 +278,19 @@ public class OmniOrientationDrive extends XModule {
         powerMotors(1);
     }
 
+    /// Stops all motors of the drive train.
     public void stopMotors(){
         x = 0;
         y = 0;
         r = 0;
         powerMotors(1);
+    }
+
+    /// Control loop function. By default, this reads joystick values.
+    @Override
+    public void control_loop() {
+        super.control_loop();
+        refreshSticks();
     }
 
     /**

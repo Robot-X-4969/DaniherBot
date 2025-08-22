@@ -9,10 +9,6 @@ import robotx.stx_libraries.drive.MecanumOrientationDrive;
 public class BasicDriveOp extends XOpMode {
     MecanumOrientationDrive mecanumOrientationDrive;
 
-    {
-
-    }
-
     public void initModules() {
 
         super.initModules();

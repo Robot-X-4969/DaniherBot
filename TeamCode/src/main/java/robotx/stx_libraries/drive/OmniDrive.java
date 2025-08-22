@@ -1,15 +1,8 @@
 package robotx.stx_libraries.drive;
 
-import com.qualcomm.hardware.bosch.BHI260IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-
-import robotx.stx_libraries.Stopwatch;
 import robotx.stx_libraries.XModule;
 
 /**
@@ -29,21 +22,13 @@ public class OmniDrive extends XModule {
         super(op);
     }
 
-    /**
-     * The front motor of the drive train.
-     */
+    /// The front motor of the drive train.
     public DcMotor front;
-    /**
-     * The right motor of the drive train.
-     */
+    /// The right motor of the drive train.
     public DcMotor right;
-    /**
-     * The back motor of the drive train.
-     */
+    /// The back motor of the drive train.
     public DcMotor back;
-    /**
-     * The left motor of the drive train.
-     */
+    /// The left motor of the drive train.
     public DcMotor left;
 
     private double x;
@@ -63,14 +48,10 @@ public class OmniDrive extends XModule {
      */
     public boolean superSlowMode = false;
 
-    /**
-     * The current percent power of the motors, ranging -1 to 1.
-     */
+    /// The current percent power of the motors, ranging -1 to 1.
     public double power = 0.75;
 
-    /**
-     * Initialization function. This method, by default, initializes the motors and gyroSensor
-     */
+    /// Initialization function. This method, by default, initializes the motors and gyroSensor
     @Override
     public void init() {
         front = opMode.hardwareMap.dcMotor.get("front");
@@ -99,10 +80,8 @@ public class OmniDrive extends XModule {
         superSlowMode = !superSlowMode;
     }
 
-    /**
-     * Refreshes the variables tracking the joystick movements
-     */
-    public void refreshStick() {
+    /// Refreshes the variables tracking the joystick movements
+    public void refreshSticks() {
         x = xGamepad1.left_stick_x;
         y = xGamepad1.left_stick_y;
         r = xGamepad1.right_stick_x;
@@ -155,11 +134,19 @@ public class OmniDrive extends XModule {
         powerMotors(1);
     }
 
+    /// Stops all motors of the drive train.
     public void stopMotors(){
         x = 0;
         y = 0;
         r = 0;
         powerMotors(1);
+    }
+
+    /// Control loop function. By default, this reads joystick values.
+    @Override
+    public void control_loop() {
+        super.control_loop();
+        refreshSticks();
     }
 
     /**

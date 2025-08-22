@@ -17,36 +17,26 @@ import robotx.stx_libraries.XModule;
  * Created by John Daniher on 2/5/2025.
  */
 public class ConfigTester extends XModule {
-    /**
-     * The array of motors to test.
-     */
+    /// The array of motors to test.
     public final DcMotor[] motors;
 
-    /**
-     * The array of servos to test.
-     */
+    /// The array of servos to test.
     public final Servo[] servos;
 
-    /**
-     * Motors currently powered.
-     */
+    /// Motors currently powered.
     public final List<String> poweredMotors = new ArrayList<>();
-    /**
-     * Motors currently powered.
-     */
+    /// Motors currently powered.
     public final List<String> activeServos = new ArrayList<>();
     
     public boolean servoMode = false;
 
-    /**
-     * The point in the motors array which is currently being tested.
-     */
+    /// The point in the motors array which is currently being tested.
     public int index = 0;
 
     /**
-     * Basic DriveTester Module.
+     * Basic ConfigTester Module.
      *
-     * @param op The OpMode the DriveTester Module is created in.
+     * @param op The OpMode the ConfigTester Module is created in.
      */
     public ConfigTester(OpMode op, int motorCount, int servoCount) {
         super(op);

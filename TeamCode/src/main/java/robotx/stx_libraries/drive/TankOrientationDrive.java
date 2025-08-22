@@ -46,30 +46,20 @@ public class TankOrientationDrive extends XModule {
     }
 
 
-    /**
-     * The number of motors per side of the robot's drive train.
-     */
+    /// The number of motors per side of the robot's drive train.
     final int motorsPerSide;
 
-    /**
-     * An array of all motors on the left side.
-     */
+    /// An array of all motors on the left side.
     public final DcMotor[] leftMotors;
 
-    /**
-     * An array of all motors on the right side.
-     */
+    /// An array of all motors on the right side.
     public final DcMotor[] rightMotors;
 
     private BHI260IMU gyroSensor;
     private Orientation lastAngles = new Orientation();
-    /**
-     * The angle at which the robot is currently rotated in respect to the field (globe)
-     */
+    /// The angle at which the robot is currently rotated in respect to the field (globe).
     public double globalAngle;
-    /**
-     * The angle at which the robot is currently rotated in respect to its set orientation angle.
-     */
+    /// The angle at which the robot is currently rotated in respect to its set orientation angle.
     public double robotAngle;
 
     private double y;
@@ -98,9 +88,7 @@ public class TankOrientationDrive extends XModule {
      */
     public double power = 0.75;
 
-    /**
-     * Initialization function. This method, by default, initializes the motors and gyroSensor
-     */
+    /// Initialization function. This method, by default, initializes the motors and gyroSensor
     @Override
     public void init() {
         if(motorsPerSide > 1){
@@ -140,17 +128,13 @@ public class TankOrientationDrive extends XModule {
         superSlowMode = !superSlowMode;
     }
 
-    /**
-     * Resets the saved orientation of the gyroSensor.
-     */
+    /// Resets the saved orientation of the gyroSensor.
     public void resetOrientation() {
         offset = globalAngle;
     }
 
-    /**
-     * Refreshes the variables tracking the joystick movements
-     */
-    public void refreshStick() {
+    /// Refreshes the variables tracking the joystick movements.
+    public void refreshSticks() {
         y = xGamepad1.left_stick_y;
         r = xGamepad1.right_stick_x;
     }
@@ -273,6 +257,11 @@ public class TankOrientationDrive extends XModule {
         }
     }
 
+    /**
+     * Rotates the robot until the IMU reads with 1 degree of a given angle.
+     *
+     * @param angle The angle to rotate the robot within 1 degree of.
+     */
     private void rotateByError(double angle){
         double margin = angle-robotAngle;
         if(margin < -180) {
@@ -292,10 +281,18 @@ public class TankOrientationDrive extends XModule {
         powerMotors(1);
     }
 
+    /// Stops all motors of the drive train.
     public void stopMotors(){
         y = 0;
         r = 0;
         powerMotors(1);
+    }
+
+    /// Control loop function. By default, this reads joystick values.
+    @Override
+    public void control_loop() {
+        super.control_loop();
+        refreshSticks();
     }
 
     /**

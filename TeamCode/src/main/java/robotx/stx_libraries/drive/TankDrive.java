@@ -39,19 +39,13 @@ public class TankDrive extends XModule {
     }
 
 
-    /**
-     * The number of motors per side of the robot's drive train.
-     */
+    /// The number of motors per side of the robot's drive train.
     final int motorsPerSide;
 
-    /**
-     * An array of all motors on the left side.
-     */
+    /// An array of all motors on the left side.
     public final DcMotor[] leftMotors;
 
-    /**
-     * An array of all motors on the right side.
-     */
+    /// An array of all motors on the right side.
     public final DcMotor[] rightMotors;
 
     private double y;
@@ -70,14 +64,10 @@ public class TankDrive extends XModule {
      */
     public boolean superSlowMode = false;
 
-    /**
-     * The current percent power of the motors, ranging -1 to 1.
-     */
+    /// The current percent power of the motors, ranging -1 to 1.
     public double power = 0.75;
 
-    /**
-     * Initialization function. This method, by default, initializes the motors and gyroSensor
-     */
+    /// Initialization function. This method, by default, initializes the motors and gyroSensor.
     @Override
     public void init() {
         if (motorsPerSide > 1) {
@@ -113,10 +103,8 @@ public class TankDrive extends XModule {
         superSlowMode = !superSlowMode;
     }
 
-    /**
-     * Refreshes the variables tracking the joystick movements
-     */
-    public void refreshStick() {
+    /// Refreshes the variables tracking the joystick movements
+    public void refreshSticks() {
         y = xGamepad1.left_stick_y;
         r = xGamepad1.right_stick_x;
     }
@@ -160,10 +148,18 @@ public class TankDrive extends XModule {
         powerMotors(1);
     }
 
-    public void stopMotors() {
+    /// Stops all motors of the drive train.
+    public void stopMotors(){
         y = 0;
         r = 0;
         powerMotors(1);
+    }
+
+    /// Control loop function. By default, this reads joystick values.
+    @Override
+    public void control_loop() {
+        super.control_loop();
+        refreshSticks();
     }
 
     /**

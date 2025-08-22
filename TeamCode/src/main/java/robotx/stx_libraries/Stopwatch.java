@@ -12,14 +12,10 @@ import java.util.concurrent.TimeUnit;
 public class Stopwatch {
     private long tStart = 0;
     private long target = 0;
-    /**
-     * The amount of resets the timer has gone through.
-     */
+    /// The amount of resets the timer has gone through.
     public int resetCounter = 0;
 
-    /**
-     * Object to manage time-based measurements.
-     */
+    /// Object to manage time-based measurements.
     public Stopwatch() {
     }
 
@@ -32,12 +28,15 @@ public class Stopwatch {
         startTimer(millis);
     }
 
-    /**
-     * Resets the StopWatch's timer.
-     */
+    /// Resets the StopWatch's timer.
     public void reset() {
         tStart = System.nanoTime();
         resetCounter++;
+    }
+
+    /// Clears the target data, stopping the timer
+    public void clear(){
+        target = 0;
     }
 
     /**
@@ -65,9 +64,7 @@ public class Stopwatch {
         target = millis;
     }
 
-    /**
-     * Clears any existing timer.
-     */
+    /// Clears any existing timer.
     public void clearTimer() {
         target = 0;
     }
@@ -78,5 +75,13 @@ public class Stopwatch {
      */
     public boolean timerDone() {
         return target != 0 && elapsedMillis() >= target;
+    }
+
+    /**
+     * Checks if set timer has started.
+     * @return true if started; false if time set
+     */
+    public boolean timerStarted(){
+        return target != 0;
     }
 }

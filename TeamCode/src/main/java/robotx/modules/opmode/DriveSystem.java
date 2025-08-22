@@ -13,239 +13,58 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import robotx.stx_libraries.XModule;
+import robotx.stx_libraries.drive.MecanumOrientationDrive;
 
-public class DriveSystem extends XModule {
+public class DriveSystem extends MecanumOrientationDrive {
     public DriveSystem(OpMode op) {
         super(op);
     }
 
+    public double dash = 10;
 
-    public DcMotor frontLeft;
-    public DcMotor frontRight;
-    public DcMotor backRight;
-    public DcMotor backLeft;
+    @Override
+    public void init(){
+        super.init();
 
-    //Gyro ID
-    public BHI260IMU gyroSensor;
-    //public BNO055IMU gyroSensor;
-    public Orientation lastAngles = new Orientation();
-    public double globalAngle;
-    public double robotAngle;
-    public double joystickAngle;
-
-    public double x;
-    public double y;
-    public double s;
-    public double r;
-
-
-    public double xPrime;
-    public double yPrime;
-
-    public boolean orientationMode = true;
-    public double offset = 0;
-
-    //public double dash = 10;  //for soccer robot
-
-    public boolean slowMode = false;
-    public boolean superSlowMode = false;
-
-    double flPow = ((yPrime - xPrime + r) * (-s));
-    double frPow = ((yPrime + xPrime - r) * (-s));
-    double brPow = ((yPrime - xPrime - r) * (-s));
-    double blPow = ((yPrime + xPrime + r) * (-s));
-
-    double power = 0.5;
-
-    public void init() {
-//Reverses Motors
-        frontLeft = opMode.hardwareMap.dcMotor.get("frontLeft");
-        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE); //WHEN DOM TRAIN
-        frontRight = opMode.hardwareMap.dcMotor.get("frontRight");
-        //frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        backRight = opMode.hardwareMap.dcMotor.get("backRight");
-        //backRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        backLeft = opMode.hardwareMap.dcMotor.get("backLeft");
-        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);  //WHEN DOM TRAIN
-
-
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled = true;
-        parameters.loggingTag = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-
-        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
-        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
-        // and named "imu".
-        gyroSensor = opMode.hardwareMap.get(BHI260IMU.class, "imu");
-        //gyroSensor = opMode.hardwareMap.get(BHI260IMU.class, "gyroSensor");
-        gyroSensor.initialize();
-
+        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
-    public int getHeadingAngle() {
-        Orientation angles = gyroSensor.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        //Orientation angles = gyroSensor.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
+    @Override
+    public void control_loop() {
+        super.control_loop();
 
-        if (deltaAngle < -180) {
-            deltaAngle += 360;
-        } else if (deltaAngle > 180) {
-            deltaAngle -= 360;
-        }
-//Change in angle compared to orientation: if gyro measures clockwise should add rather than subtract
-        globalAngle -= deltaAngle;
-
-        int finalAngle = (int) globalAngle;
-
-        lastAngles = angles;
-
-        return finalAngle;
-    }
-
-    public void switchMode() {
-        orientationMode = !orientationMode;
-    }
-
-    public void toggleSlow() {
-        if (slowMode) {
-            slowMode = false;
-        } else if (superSlowMode) {
-            superSlowMode = false;
-            slowMode = true;
+        if(xGamepad1.a.isDown()){
+            if(dash >= 1){
+                power = 1;
+            } else {
+                power = 0.5;
+            }
+            dash = Math.max(dash-0.1, 0);
         } else {
-            slowMode = true;
+            power = 0.5;
+            dash = Math.min(dash+0.2, 10);
+        }
+
+        if(xGamepad1.x.isDown() && xGamepad1.b.wasPressed()){
+            resetOrientation();
         }
     }
 
-    public void toggleSuperSlow() {
-        if (superSlowMode) {
-            superSlowMode = false;
-        } else if (slowMode) {
-            slowMode = false;
-            superSlowMode = true;
-        } else {
-            superSlowMode = true;
-        }
-    }
-
+    @Override
     public void loop() {
-        getHeadingAngle();
+        super.loop();
 
-
-        if (orientationMode) {
-            robotAngle = Math.toRadians(globalAngle - offset);
-        } else {
-            robotAngle = 0;
-        }
-        /*if (xGamepad1.y.wasPressed()) {
-            switchMode();
-        }
-        */
-        if (xGamepad1.x.wasPressed()) {
-            offset = globalAngle;
-        }
-        //opMode.telemetry.addData("Orientation mode:", orientationMode);
-
-
-        x = xGamepad1.left_stick_x;
-        y = xGamepad1.left_stick_y;
-//Position of right stick AKA direction robot should turn
-        r = xGamepad1.right_stick_x;
-        s = ((Math.max(Math.abs(x), Math.max(Math.abs(y), Math.abs(r)))) * (Math.max(Math.abs(x), Math.max(Math.abs(y), Math.abs(r))))) / ((x * x) + (y * y) + (r * r));
-
-
-//Position of joystick when not straight forward
-        int jsOffset = 90;
-        if (x > 0) {
-            joystickAngle = Math.atan(-y / x) + Math.toRadians(270 + jsOffset);
-        } else if (x < 0) {
-            joystickAngle = Math.atan(-y / x) + Math.toRadians(90 + jsOffset);
-        }
-//Position of joystick when near perfectly forward
-        else if (y > 0) {
-            joystickAngle = Math.toRadians(180 + jsOffset);
-        } else if (y < 0) {
-            joystickAngle = Math.toRadians(360 + jsOffset);
+        StringBuilder display = new StringBuilder();
+        for(int i = 1; i < 11; i++){
+            if(i <= dash){
+                display.append("■");
+            } else {
+                display.append("□");
+            }
         }
 
-        xPrime = (Math.sqrt((x * x) + (y * y))) * (Math.cos(robotAngle + joystickAngle));
-        yPrime = -(Math.sqrt((x * x + y * y))) * (Math.sin(robotAngle + joystickAngle));
-
-        //Makes robot slower when picking up blocks
-        slowMode = LiftSystem.state == 1;
-
-        if (xGamepad1.dpad_down.wasPressed()) {
-            power -= 0.25;
-        }
-        if (xGamepad1.dpad_up.wasPressed()) {
-            power += 0.25;
-        }
-
-        if (power > 1) {
-            power = 1;
-        }
-        if (power < 0.25) {
-            power = 0.25;
-        }
-
-        if (slowMode) {
-            frontLeft.setPower((yPrime - xPrime - r) * (s) * 0.5);
-            backRight.setPower((yPrime - xPrime + r) * (s) * 0.5);
-
-            frontRight.setPower((yPrime + xPrime + r) * (s) * 0.5);
-            backLeft.setPower((yPrime + xPrime - r) * (s) * 0.5);
-        } else if (superSlowMode) {
-            frontLeft.setPower((yPrime - xPrime - r) * (s) * 0.2);
-            backRight.setPower((yPrime - xPrime + r) * (s) * 0.2);
-
-            frontRight.setPower((yPrime + xPrime + r) * (s) * .2);
-            backLeft.setPower((yPrime + xPrime - r) * (s) * .2);
-        } else {
-            frontLeft.setPower((yPrime - xPrime - r) * (s) * power);
-            backRight.setPower((yPrime - xPrime + r) * (s) * power);
-
-            frontRight.setPower((yPrime + xPrime + r) * (s) * power);
-            backLeft.setPower((yPrime + xPrime - r) * (s) * power);
-        }
-
-        // deadzone code
-    /*
-        if ( 0 < Math.abs(flPow) && Math.abs(flPow) < 0.4){
-            frontLeft.setPower(0);
-            frontRight.setPower(0);
-            backLeft.setPower(0);
-            backRight.setPower(0);
-        }
-        else if ( 0 < Math.abs(frPow) && Math.abs(frPow) < 0.4){
-            frontLeft.setPower(0);
-            frontRight.setPower(0);
-            backLeft.setPower(0);
-            backRight.setPower(0);
-        }
-        else if ( 0 < Math.abs(brPow) && Math.abs(brPow) < 0.4){
-            frontLeft.setPower(0);
-            frontRight.setPower(0);
-            backLeft.setPower(0);
-            backRight.setPower(0);
-        }
-        else if ( 0 < Math.abs(blPow) && Math.abs(blPow) < 0.4){
-            frontLeft.setPower(0);
-            frontRight.setPower(0);
-            backLeft.setPower(0);
-            backRight.setPower(0);
-        }
-        else{
-            frontLeft.setPower(flPow);
-            frontRight.setPower(frPow);
-            backLeft.setPower(blPow);
-            backRight.setPower(brPow);
-        }
-    */
-
-
+        opMode.telemetry.addData("Boost", display.toString());
+        opMode.telemetry.update();
     }
 }
