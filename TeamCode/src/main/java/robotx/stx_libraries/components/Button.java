@@ -1,4 +1,4 @@
-package robotx.stx_libraries;
+package robotx.stx_libraries.components;
 
 /**
  * Button Class

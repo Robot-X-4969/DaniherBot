@@ -9,7 +9,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-import robotx.stx_libraries.Stopwatch;
+import robotx.stx_libraries.util.Stopwatch;
 import robotx.stx_libraries.XModule;
 
 /**

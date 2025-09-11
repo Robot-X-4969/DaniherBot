@@ -3,7 +3,7 @@ package robotx.stx_libraries.tuning;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import robotx.stx_libraries.XModule;
-import robotx.stx_libraries.XMotor;
+import robotx.stx_libraries.components.XMotor;
 
 /**
  * EncoderTester Class

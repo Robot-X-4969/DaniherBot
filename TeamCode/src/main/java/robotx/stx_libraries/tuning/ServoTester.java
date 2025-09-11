@@ -1,15 +1,9 @@
 package robotx.stx_libraries.tuning;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.ServoController;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import robotx.stx_libraries.XModule;
-import robotx.stx_libraries.XServo;
+import robotx.stx_libraries.components.XServo;
 
 /**
  * Created by John Daniher on 2/6/2025.

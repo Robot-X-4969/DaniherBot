@@ -3,14 +3,14 @@ package robotx.stx_libraries.drive;
 import com.qualcomm.hardware.bosch.BHI260IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-import robotx.stx_libraries.Stopwatch;
+import robotx.stx_libraries.components.XGyroSensor;
+import robotx.stx_libraries.util.Stopwatch;
 import robotx.stx_libraries.XModule;
 
 /**
@@ -39,7 +39,7 @@ public class MecanumOrientationDrive extends XModule {
     /// The back-left motor of the drive train.
     public DcMotor backLeft;
 
-    private BHI260IMU gyroSensor;
+    private XGyroSensor gyroSensor;
     private Orientation lastAngles = new Orientation();
     /// The angle at which the robot is currently rotated in respect to the field (globe)
     public double globalAngle;
@@ -83,8 +83,8 @@ public class MecanumOrientationDrive extends XModule {
         backLeft = opMode.hardwareMap.dcMotor.get("backLeft");
 
         // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
-        gyroSensor = opMode.hardwareMap.get(BHI260IMU.class, "imu");
-        gyroSensor.initialize();
+        gyroSensor = new XGyroSensor(opMode, XGyroSensor.ImuModel.IMU);
+        gyroSensor.init();
     }
 
     /// Toggles whether or not orientation mode is active.
@@ -130,7 +130,7 @@ public class MecanumOrientationDrive extends XModule {
      * @return The angle at which the robot is rotated at.
      */
     public double getHeadingAngle() {
-        Orientation angles = gyroSensor.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        Orientation angles = gyroSensor.getOrientation();
         double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
 
         if (deltaAngle < -180) {

@@ -4,6 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import java.util.ArrayList;
 
+import robotx.stx_libraries.components.XGamepad;
+import robotx.stx_libraries.util.Scheduler;
+
 /**
  * XOpMode Class
  * <p>

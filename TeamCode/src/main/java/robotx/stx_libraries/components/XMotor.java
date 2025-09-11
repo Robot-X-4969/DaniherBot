@@ -1,8 +1,11 @@
-package robotx.stx_libraries;
+package robotx.stx_libraries.components;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
+import robotx.stx_libraries.util.Scheduler;
+import robotx.stx_libraries.util.Stopwatch;
 
 /**
  * XMotor Class
