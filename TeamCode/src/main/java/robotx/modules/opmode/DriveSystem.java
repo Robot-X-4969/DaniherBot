@@ -20,10 +20,8 @@ public class DriveSystem extends MecanumOrientationDrive {
         super(op);
     }
 
-    public double dash = 10;
-
     @Override
-    public void init(){
+    public void init() {
         super.init();
 
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -34,37 +32,11 @@ public class DriveSystem extends MecanumOrientationDrive {
     public void control_loop() {
         super.control_loop();
 
-        if(xGamepad1.a.isDown()){
-            if(dash >= 1){
-                power = 1;
-            } else {
-                power = 0.5;
-            }
-            dash = Math.max(dash-0.1, 0);
-        } else {
-            power = 0.5;
-            dash = Math.min(dash+0.2, 10);
-        }
-
-        if(xGamepad1.x.isDown() && xGamepad1.b.wasPressed()){
+        if (xGamepad1.dpad_down.wasPressed()) {
             resetOrientation();
         }
+
+
     }
 
-    @Override
-    public void loop() {
-        super.loop();
-
-        StringBuilder display = new StringBuilder();
-        for(int i = 1; i < 11; i++){
-            if(i <= dash){
-                display.append("■");
-            } else {
-                display.append("□");
-            }
-        }
-
-        opMode.telemetry.addData("Boost", display.toString());
-        opMode.telemetry.update();
-    }
 }
