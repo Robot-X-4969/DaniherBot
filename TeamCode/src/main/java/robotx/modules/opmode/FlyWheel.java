@@ -52,16 +52,29 @@ public class FlyWheel extends XModule {
     @Override
     public void control_loop(){
         super.control_loop();
-        if(xGamepad1.dpad_left.wasPressed()){
-            index = Math.max(index-1, 0);
-        }
-        else if(xGamepad1.dpad_right.wasPressed()){
-            index = Math.max(index+1, 3);
-        }
+        if(!dualPlayer) {
+            if (xGamepad1.dpad_left.wasPressed()) {
+                index = Math.max(index - 1, 0);
+            } else if (xGamepad1.dpad_right.wasPressed()) {
+                index = Math.min(index + 1, 3);
+            }
 
-        if(xGamepad1.b.wasPressed()){
-            isOpen = !isOpen;
-            setServo();
+            if (xGamepad1.b.wasPressed()) {
+                isOpen = !isOpen;
+                setServo();
+            }
+        }
+        else{
+            if(xGamepad2.dpad_left.wasPressed()){
+                index = Math.max(index - 1, 0);
+            }else if(xGamepad2.dpad_right.wasPressed()){
+                index = Math.min(index + 1, 3);
+            }
+
+            if(xGamepad2.b.wasPressed()){
+                isOpen = !isOpen;
+                setServo();
+            }
         }
     }
     

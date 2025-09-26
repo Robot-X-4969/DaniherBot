@@ -25,11 +25,22 @@ public class IntakeSystem extends XModule {
     public void control_loop() {
 
         super.control_loop();
-        if (xGamepad1.a.isDown()) {
-            intakeMotor.setPower(1.0);
-        } else {
-            intakeMotor.setPower(0.0);
+
+        if(!dualPlayer){
+            if (xGamepad1.a.isDown()) {
+                intakeMotor.setPower(1.0);
+            } else {
+                intakeMotor.setPower(0.0);
+            }
         }
+        else{
+            if (xGamepad2.a.isDown()) {
+                intakeMotor.setPower(1.0);
+            } else {
+                intakeMotor.setPower(0.0);
+            }
+        }
+
 
     }
 
