@@ -32,23 +32,13 @@ public class FlyWheel extends XModule {
     @Override
     public void loop() {
         super.loop();
-        if(run){
+        if (run) {
             motor1.setPower(-1);
             motor2.setPower(1);
-        }
-        else {
+        } else {
             motor1.setPower(0);
             motor2.setPower(0);
         }
 
     }
-
-    @Override
-    public void control_loop(){
-        super.control_loop();
-        if(xGamepad1.a.wasPressed()){
-            run = !run;
-        }
-    }
-
 }
