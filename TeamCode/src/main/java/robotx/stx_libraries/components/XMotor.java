@@ -45,6 +45,8 @@ public class XMotor {
     private int min;
     private int max;
 
+    private boolean estimateMotorRPM = false;
+
     /**
      * XMotor Constructor
      * <p>
@@ -549,54 +551,62 @@ public class XMotor {
      * Tunes the rpm coefficient.
      */
     public void loop() {
-        refreshPosition(false);
-        op.telemetry.addData("pos", position);
+        if(estimateMotorRPM){
 
-        if(following != null){
-            final int followingPosition = following.getPosition();
-            double newPower = following.getPower();
+            refreshPosition(false);
+            op.telemetry.addData("pos", position);
 
-            if(newPower == 0 && Math.abs(position-followingPosition) > 10){
-                newPower = 0.25;
+            if(following != null){
+                final int followingPosition = following.getPosition();
+                double newPower = following.getPower();
+
+                if(newPower == 0 && Math.abs(position-followingPosition) > 10){
+                    newPower = 0.25;
+                }
+                setFixedRotation(followingPosition, newPower);
             }
-            setFixedRotation(followingPosition, newPower);
-        }
 
-        //Ensures encoder within range
-        if (position < min) {
-            setFixedRotation(min);
-        } else if (position > max) {
-            setFixedRotation(max);
-        }
+            //Ensures encoder within range
+            if (position < min) {
+                setFixedRotation(min);
+            } else if (position > max) {
+                setFixedRotation(max);
+            }
 
-        //If timer has elapsed, stop motor
-        if (stopWatch.timerDone()) {
-            stop();
-            return;
-        }
-        //If motor isn't moving
-        if (fixed && !motor.isBusy()) {
-            stop();
-            return;
-        }
+            //If timer has elapsed, stop motor
+            if (stopWatch.timerDone()) {
+                stop();
+                return;
+            }
+            //If motor isn't moving
+            if (fixed && !motor.isBusy()) {
+                stop();
+                return;
+            }
 
-        if (Math.abs(power) > 0.15 && rpmStopwatch.timerDone() && (!rpmCoefSet || safe)) {
-            final int tickDiff = Math.abs(position - lastPos);
-            final double r = ((double) tickDiff) / tpr;
-            final long timeDiff = rpmStopwatch.elapsedMillis();
-            final double currentRPM = r / ((double) timeDiff) * 1000 * 60;
+            if (Math.abs(power) > 0.15 && rpmStopwatch.timerDone() && (!rpmCoefSet || safe)) {
+                final int tickDiff = Math.abs(position - lastPos);
+                final double r = ((double) tickDiff) / tpr;
+                final long timeDiff = rpmStopwatch.elapsedMillis();
+                final double currentRPM = r / ((double) timeDiff) * 1000 * 60;
 
-            rpmStopwatch.reset();
-            refreshPosition(true);
-            if (safe) {
-                if (currentRPM < safeRPM * Math.abs(power)) {
-                    stop();
-                    return;
+                rpmStopwatch.reset();
+                refreshPosition(true);
+                if (safe) {
+                    if (currentRPM < safeRPM * Math.abs(power)) {
+                        stop();
+                        return;
+                    }
+                }
+                if (!rpmCoefSet) {
+                    rpmCoef = power / currentRPM;
                 }
             }
-            if (!rpmCoefSet) {
-                rpmCoef = power / currentRPM;
-            }
+
         }
+        else{
+
+        }
+
     }
 }
