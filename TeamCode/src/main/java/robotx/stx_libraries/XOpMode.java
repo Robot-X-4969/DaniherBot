@@ -29,7 +29,7 @@ public abstract class XOpMode extends OpMode {
      */
     public final XGamepad xGamepad1 = new XGamepad();
     /**
-     * XGamepad object for the secodnary OpMode gamepad.
+     * XGamepad object for the secondary OpMode gamepad.
      */
     public final XGamepad xGamepad2 = new XGamepad();
 
