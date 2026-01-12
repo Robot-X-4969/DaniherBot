@@ -41,4 +41,19 @@ public class FlyWheel extends XModule {
         }
 
     }
+
+    @Override
+    public void control_loop() {
+        super.control_loop();
+        if (dualPlayer) {
+            if (xGamepad1.a.wasPressed()) {
+                run = !run;
+            }
+        } else {
+            if (xGamepad1.a.wasPressed()) {
+                run = !run;
+            }
+        }
+
+    }
 }
