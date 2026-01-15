@@ -162,7 +162,7 @@ public class XServo {
      * @param position The position to move the servo to.
      */
     public void setPosition(double position) {
-        this.position = Math.max(min, Math.max(min, position));
+        this.position = Math.max(min, Math.min(max, position));
         servo.setPosition(this.position);
     }
 

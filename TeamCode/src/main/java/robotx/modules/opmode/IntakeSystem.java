@@ -8,7 +8,7 @@ import robotx.stx_libraries.XModule;
 
 public class IntakeSystem extends XModule {
 
-    DcMotor intakeMotor;
+    DcMotor motor;
 
     public IntakeSystem(OpMode op) {
         super(op);
@@ -16,32 +16,18 @@ public class IntakeSystem extends XModule {
 
     @Override
     public void init() {
-        intakeMotor = opMode.hardwareMap.get(DcMotor.class, "intakeMotor");
-
-
+        motor = opMode.hardwareMap.get(DcMotor.class, "intake");
     }
 
     @Override
     public void control_loop() {
-
         super.control_loop();
 
-        if(!dualPlayer){
-            if (xGamepad1.a.isDown()) {
-                intakeMotor.setPower(1.0);
-            } else {
-                intakeMotor.setPower(0.0);
-            }
+        if(xGamepad1.a.isDown()){
+            motor.setPower(-0.75);
+        } else {
+            motor.setPower(0);
         }
-        else{
-            if (xGamepad2.a.isDown()) {
-                intakeMotor.setPower(1.0);
-            } else {
-                intakeMotor.setPower(0.0);
-            }
-        }
-
-
     }
 
 }

@@ -55,6 +55,15 @@ public class Stopwatch {
         return TimeUnit.NANOSECONDS.toMillis(elapsedNanos());
     }
 
+
+    public long remainingNanos() {
+        return Math.max(0, target - System.nanoTime());
+    }
+
+    public long remainingMillis(){
+        return TimeUnit.NANOSECONDS.toMillis(remainingNanos());
+    }
+
     /**
      * Starts a new timer.
      * @param millis Timer length in milliseconds.
