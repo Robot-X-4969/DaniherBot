@@ -14,8 +14,6 @@ public class FlyWheel extends XModule {
 
     int i = 0;
 
-    boolean run = false;
-
     public FlyWheel(OpMode op) {
         super(op);
     }
@@ -40,51 +38,32 @@ public class FlyWheel extends XModule {
 
     }
 
-    public void control_loop(){
-        super.control_loop();
-
-        if(!dualPlayer){
-            if(xGamepad1.dpad_left.isDown()){
-                if((i + 1) != motor_speeds.length) {
-                    motor1.setPower(motor_speeds[i + 1]);
-                }
-            }
-            else if(xGamepad1.dpad_right.isDown()){
-                if((i - 1) != -1) {
-                    motor1.setPower(motor_speeds[i - 1]);
-                }
-            }
-        }
-        else {
-            if(xGamepad2.dpad_left.isDown()){
-                if((i + 1) != motor_speeds.length) {
-                    motor1.setPower(motor_speeds[i + 1]);
-                }
-            }
-            else if(xGamepad2.dpad_right.isDown()){
-                if((i - 1) != -1) {
-                    motor1.setPower(motor_speeds[i - 1]);
-                }
-            }
-
-        }
-
-
-
-    }
-
     @Override
     public void control_loop() {
         super.control_loop();
-        if (dualPlayer) {
-            if (xGamepad1.a.wasPressed()) {
-                run = !run;
+
+        if (!dualPlayer) {
+            if (xGamepad1.dpad_left.isDown()) {
+                if ((i + 1) != motor_speeds.length) {
+                    motor1.setPower(motor_speeds[i + 1]);
+                }
+            } else if (xGamepad1.dpad_right.isDown()) {
+                if ((i - 1) != -1) {
+                    motor1.setPower(motor_speeds[i - 1]);
+                }
             }
         } else {
-            if (xGamepad1.a.wasPressed()) {
-                run = !run;
+            if (xGamepad2.dpad_left.isDown()) {
+                if ((i + 1) != motor_speeds.length) {
+                    motor1.setPower(motor_speeds[i + 1]);
+                }
+            } else if (xGamepad2.dpad_right.isDown()) {
+                if ((i - 1) != -1) {
+                    motor1.setPower(motor_speeds[i - 1]);
+                }
             }
-        }
 
+        }
     }
+
 }
