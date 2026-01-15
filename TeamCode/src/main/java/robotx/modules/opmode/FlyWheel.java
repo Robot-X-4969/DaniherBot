@@ -38,7 +38,7 @@ public class FlyWheel extends XModule {
         servo1 = new XServo(opMode, "hood1", SERVO_POSITIONS[0]);
         servo1.init();
 
-        servo2 = new XServo(opMode, "hood2", 0.99-SERVO_POSITIONS[0]);
+        servo2 = new XServo(opMode, "hood2", 0.99 - SERVO_POSITIONS[0]);
         servo2.init();
 
         increment(0);
@@ -47,23 +47,24 @@ public class FlyWheel extends XModule {
     }
 
     @Override
-    public void control_loop(){
+    public void control_loop() {
         super.control_loop();
 
-        if(xGamepad1.dpad_left.wasPressed()){
+        if (xGamepad1.dpad_left.wasPressed()) {
             increment(-1);
-        } else if(xGamepad1.dpad_right.wasPressed()){
+        } else if (xGamepad1.dpad_right.wasPressed()) {
             increment(1);
         }
     }
 
-    public void increment(int increment){
-        index = Math.max(0, Math.min(index + increment, MOTOR_SPEEDS.length-1));
+    public void increment(int increment) {
+        index = Math.max(0, Math.min(index + increment, MOTOR_SPEEDS.length - 1));
 
         motor1.setPower(MOTOR_SPEEDS[index]);
         motor2.setPower(MOTOR_SPEEDS[index]);
 
         servo1.setPosition(SERVO_POSITIONS[index]);
-        servo2.setPosition(0.99-SERVO_POSITIONS[index]);
+        servo2.setPosition(0.99 - SERVO_POSITIONS[index]);
     }
+
 }
