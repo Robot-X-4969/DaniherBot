@@ -22,7 +22,7 @@ public class CRServoTest extends XModule {
     public void loop(){
         super.loop();
 
-
+        crServo.rotate(1.0);
 
     }
 }

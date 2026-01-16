@@ -15,7 +15,6 @@ public class XCRServo {
     public XCRServo(OpMode op, String servoPath){
         this.op = op;
         this.servoPath = servoPath;
-        this.power = 1.0;
     }
 
     public void init(){
