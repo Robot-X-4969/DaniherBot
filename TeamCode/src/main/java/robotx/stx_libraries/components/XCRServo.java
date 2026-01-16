@@ -29,7 +29,6 @@ public class XCRServo {
 
     }
 
-
     public void stop(){
 
         crServo.setPower(0.0);

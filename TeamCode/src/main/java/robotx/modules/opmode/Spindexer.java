@@ -11,6 +11,7 @@ public class Spindexer extends XModule {
     private static final int INCREMENT = 475;
 
     XMotor motor;
+
     XServo gate1, gate2;
 
     public Spindexer(OpMode op) {

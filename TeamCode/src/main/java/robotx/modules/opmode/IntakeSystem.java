@@ -4,11 +4,13 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import robotx.stx_libraries.XModule;
+import robotx.stx_libraries.components.XCRServo;
 
 
 public class IntakeSystem extends XModule {
 
-    DcMotor motor;
+    XCRServo crServo1;
+    XCRServo crServo2;
 
     public IntakeSystem(OpMode op) {
         super(op);
@@ -16,7 +18,12 @@ public class IntakeSystem extends XModule {
 
     @Override
     public void init() {
-        motor = opMode.hardwareMap.get(DcMotor.class, "intake");
+
+        crServo1 = new XCRServo(opMode, "intakeServo1");
+        crServo2 = new XCRServo(opMode, "intakeServo2");
+        crServo1.init();
+        crServo2.init();
+
     }
 
     @Override
@@ -24,9 +31,12 @@ public class IntakeSystem extends XModule {
         super.control_loop();
 
         if(xGamepad1.a.isDown()){
-            motor.setPower(-0.75);
+            crServo1.rotate(1.0);
+            crServo2.rotate(-1.0);
+
         } else {
-            motor.setPower(0);
+            crServo1.rotate(0.25);
+            crServo2.rotate(0.25);
         }
     }
 
