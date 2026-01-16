@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import robotx.modules.opmode.DriveSystem;
 import robotx.modules.opmode.FlyWheel;
+import robotx.modules.opmode.IntakeSystem;
 import robotx.modules.opmode.Spindexer;
 import robotx.stx_libraries.XOpMode;
 
@@ -12,6 +13,7 @@ public class OpMode2026 extends XOpMode {
     FlyWheel flyWheel;
     Spindexer spindexer;
     DriveSystem driveSystem;
+    IntakeSystem intakeSystem;
 
     public void initModules() {
         driveSystem = new DriveSystem(this);
@@ -22,5 +24,8 @@ public class OpMode2026 extends XOpMode {
 
         spindexer = new Spindexer(this);
         activeModules.add(spindexer);
+
+        intakeSystem = new IntakeSystem(this);
+        activeModules.add(intakeSystem);
     }
 }

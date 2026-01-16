@@ -54,6 +54,34 @@ public class Scheduler {
         return null;
     }
 
+    public Event schedule(Event event){
+        if(!ids.contains(event.id)){
+            events.add(event);
+            ids.add(event.id);
+            return event;
+        }
+        return null;
+    }
+
+
+    public Event setEvent(Long millis, String id, Runnable runnable) {
+        Event event = getEvent(id);
+        if (event != null) {
+            cancel(id);
+            event = new Event(millis == null ? event.stopwatch.remainingMillis() : millis,
+                    id, runnable == null ? event.event : runnable);
+            return schedule(event);
+        }
+        return schedule(millis, id, runnable);
+    }
+
+    public Event getEvent(String id) {
+        if (ids.contains(id)) {
+            return events.get(ids.indexOf(id));
+        }
+        return null;
+    }
+
     /**
      * Cancels the future execution of an event with a given id.
      *
@@ -72,8 +100,8 @@ public class Scheduler {
      * @param event The event to cancel.
      */
     public void cancel(Event event) {
-        if(events.contains(event)){
-            ids.remove(events.indexOf(event));
+        if (events.contains(event)) {
+            ids.remove(event.id);
             events.remove(event);
         }
     }
@@ -82,11 +110,18 @@ public class Scheduler {
      * Loop method which checks which executables to run.
      */
     public void loop() {
-        for (Event event : events) {
+        final List<Integer> ran = new ArrayList<>();
+        for (int i = 0; i < events.size(); i++) {
+            final Event event = events.get(i);
             if (event.stopwatch.timerDone()) {
                 event.run();
-                events.remove(event);
+                ran.add(i);
             }
+        }
+
+        for(Integer i : ran){
+            events.remove(i);
+            ids.remove(i);
         }
     }
 }

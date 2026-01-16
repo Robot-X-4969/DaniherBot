@@ -43,7 +43,7 @@ public class XGyroSensor {
         imu = op.hardwareMap.get(IMU.class, path);
 
         RevHubOrientationOnRobot.LogoFacingDirection logo = RevHubOrientationOnRobot.LogoFacingDirection.UP;
-        RevHubOrientationOnRobot.UsbFacingDirection  usb  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+        RevHubOrientationOnRobot.UsbFacingDirection  usb  = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
 
         IMU.Parameters params = new IMU.Parameters(
                 new RevHubOrientationOnRobot(logo, usb)
