@@ -83,7 +83,7 @@ public class MecanumOrientationDrive extends XModule {
         backLeft = opMode.hardwareMap.dcMotor.get("backLeft");
 
         // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
-        gyroSensor = new XGyroSensor(opMode, XGyroSensor.ImuModel.BHI260);
+        gyroSensor = new XGyroSensor(opMode, XGyroSensor.ImuModel.IMU);
         gyroSensor.init();
     }
 
@@ -119,7 +119,7 @@ public class MecanumOrientationDrive extends XModule {
 
     /// Refreshes the variables tracking the joystick movements
     public void refreshSticks() {
-        x = xGamepad1.left_stick_x;
+        x = -xGamepad1.left_stick_x;
         y = xGamepad1.left_stick_y;
         r = xGamepad1.right_stick_x;
     }
@@ -132,8 +132,6 @@ public class MecanumOrientationDrive extends XModule {
     public double getHeadingAngle() {
         Orientation angles = gyroSensor.getOrientation();
         double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
-        opMode.telemetry.addData("angle", angles.firstAngle);
-        opMode.telemetry.update();
 
         if (deltaAngle < -180) {
             deltaAngle += 360;

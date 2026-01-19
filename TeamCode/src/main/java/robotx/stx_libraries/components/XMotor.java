@@ -125,6 +125,7 @@ public class XMotor {
      * @return The current power of the motor.
      */
     public int getPosition() {
+        position = motor.getCurrentPosition();
         return motor.getCurrentPosition();
     }
 
@@ -427,6 +428,25 @@ public class XMotor {
         motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         setPower(power);
     }
+
+    public void hold(int hold, double power) {
+        getPosition();
+        final int error = targetPosition - position;
+
+        if (Math.abs(error) <= hold) {
+            motor.setPower(0);
+            return;
+        }
+
+        final double out = Math.min(power, Math.max(-power, 0.006 * error));
+        setPower(out);
+
+        op.telemetry.addData("pos", position);
+        op.telemetry.addData("target", targetPosition);
+        op.telemetry.addData("power", out);
+        op.telemetry.update();
+    }
+
 
     /**
      * Checks if the motor has reached its target encoder position.

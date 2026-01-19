@@ -9,11 +9,11 @@ import robotx.stx_libraries.components.XServo;
 public class FlyWheel extends XModule {
 
     private static final double[] MOTOR_SPEEDS = new double[]{
-            0.0, 0.05, 0.2, 0.4, 0.5, 1.0
+            0.0, 0.5, 0.5
     };
 
     private static final double[] SERVO_POSITIONS = new double[]{
-            0.0, 0.0, 0.4, 0.25, 0.2, 0.25
+            0.0, 0.125, 0.16
     };
 
     XMotor motor1, motor2;
@@ -50,10 +50,18 @@ public class FlyWheel extends XModule {
     public void control_loop() {
         super.control_loop();
 
-        if (xGamepad1.dpad_left.wasPressed()) {
-            increment(-1);
-        } else if (xGamepad1.dpad_right.wasPressed()) {
-            increment(1);
+        if(dualPlayer){
+            if (xGamepad1.dpad_left.wasPressed() || xGamepad2.dpad_left.wasPressed()) {
+                increment(-1);
+            } else if (xGamepad1.dpad_right.wasPressed() || xGamepad2.dpad_right.wasPressed()) {
+                increment(1);
+            }
+        } else {
+            if (xGamepad1.dpad_left.wasPressed()) {
+                increment(-1);
+            } else if (xGamepad1.dpad_right.wasPressed()) {
+                increment(1);
+            }
         }
     }
 
