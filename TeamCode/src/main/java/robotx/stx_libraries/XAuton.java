@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class XAuton extends LinearOpMode {
-    public final List<XModule> modules = new ArrayList<>();
+    public final XRobotContext ctx = new XRobotContext(this);
+    public final List<XModule> modules = ctx.autonomousModules;
 
     public void initModules(){
     }
@@ -28,5 +29,9 @@ public class XAuton extends LinearOpMode {
         if(opModeIsActive()){
             run();
         }
+    }
+
+    public void registerModule(XModule module){
+        ctx.registerModule(module, XRobotContext.ModuleType.AUTONOMOUS);
     }
 }
