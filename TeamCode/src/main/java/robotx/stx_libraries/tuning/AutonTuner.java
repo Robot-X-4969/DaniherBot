@@ -64,14 +64,14 @@ public class AutonTuner extends MecanumDrive {
     @Override
     public void control_loop() {
         // Checks controls for tileTime changes.
-        if (xGamepad1.dpad_up.wasPressed()) {
+        if (xDS.xGamepad1.dpad_up.wasPressed()) {
             if (turning) {
                 turnTime += unit;
             } else {
                 tileTime += unit;
             }
         }
-        if (xGamepad1.dpad_down.wasPressed()) {
+        if (xDS.xGamepad1.dpad_down.wasPressed()) {
             if (turning) {
                 turnTime -= unit;
                 if (turnTime < 0) {
@@ -86,25 +86,25 @@ public class AutonTuner extends MecanumDrive {
         }
 
         // Checks controls for unit changes.
-        if (xGamepad1.dpad_right.wasPressed()) {
+        if (xDS.xGamepad1.dpad_right.wasPressed()) {
             unit *= 10;
             if (unit > 1000) {
                 unit = 1000;
             }
         }
-        if (xGamepad1.dpad_left.wasPressed()) {
+        if (xDS.xGamepad1.dpad_left.wasPressed()) {
             unit /= 10;
             if (unit < 1) {
                 unit = 1;
             }
         }
 
-        if (xGamepad1.b.wasPressed()) {
+        if (xDS.xGamepad1.b.wasPressed()) {
             turning = !turning;
         }
 
         // Check controls for run start.
-        if (xGamepad1.a.wasPressed()) {
+        if (xDS.xGamepad1.a.wasPressed()) {
             if (turning) {
                 rotate(1);
             } else {

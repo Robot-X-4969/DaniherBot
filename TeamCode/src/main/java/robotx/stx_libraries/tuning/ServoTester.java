@@ -57,37 +57,37 @@ public class ServoTester extends XModule {
 
     @Override
     public void control_loop(){
-        if(xGamepad1.left_bumper.wasPressed()){
+        if(xDS.xGamepad1.left_bumper.wasPressed()){
             unit /= 10;
             if(unit < 0.001){
                 unit = 0.001;
             }
         }
-        if(xGamepad1.right_bumper.wasPressed()){
+        if(xDS.xGamepad1.right_bumper.wasPressed()){
             unit *= 10;
             if(unit > 0.1){
                 unit = 0.1;
             }
         }
-        if(xGamepad1.dpad_down.wasPressed()){
+        if(xDS.xGamepad1.dpad_down.wasPressed()){
             servos[index].increment(-unit);
         }
-        if(xGamepad1.dpad_up.wasPressed()){
+        if(xDS.xGamepad1.dpad_up.wasPressed()){
             servos[index].increment(unit);
         }
-        if(xGamepad1.a.wasPressed()){
+        if(xDS.xGamepad1.a.wasPressed()){
             index++;
             if(index >= servos.length){
                 index = 0;
             }
         }
-        if(xGamepad1.b.wasPressed()){
+        if(xDS.xGamepad1.b.wasPressed()){
             index--;
             if(index < 0){
                 index = servos.length-1;
             }
         }
-        if(xGamepad1.x.wasPressed()){
+        if(xDS.xGamepad1.x.wasPressed()){
             enabled[index] = !enabled[index];
         }
     }

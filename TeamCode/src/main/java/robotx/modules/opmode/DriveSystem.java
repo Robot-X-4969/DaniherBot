@@ -32,13 +32,13 @@ public class DriveSystem extends MecanumOrientationDrive {
     public void control_loop() {
         super.control_loop();
 
-        if (xGamepad1.y.wasPressed()) {
+        if (xDS.xGamepad1.y.wasPressed()) {
             resetOrientation();
         }
-        if (xGamepad1.dpad_up.wasPressed()) {
+        if (xDS.xGamepad1.dpad_up.wasPressed()) {
             power += 0.25;
         }
-        if (xGamepad1.dpad_down.wasPressed()) {
+        if (xDS.xGamepad1.dpad_down.wasPressed()) {
             power -= 0.25;
         }
     }

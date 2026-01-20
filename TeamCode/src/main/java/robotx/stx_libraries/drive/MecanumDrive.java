@@ -82,9 +82,9 @@ public class MecanumDrive extends XModule {
 
     /// Refreshes the variables tracking the joystick movements
     public void refreshSticks() {
-        x = -xGamepad1.left_stick_x;
-        y = xGamepad1.left_stick_y;
-        r = xGamepad1.right_stick_x;
+        x = xDS.xGamepad1.left_stick_x;
+        y = xDS.xGamepad1.left_stick_y;
+        r = xDS.xGamepad1.right_stick_x;
     }
 
     /**

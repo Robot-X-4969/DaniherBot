@@ -43,48 +43,25 @@ public class Spindexer extends XModule {
     public void control_loop() {
         super.control_loop();
 
-        if(dualPlayer){
-            if (xGamepad1.left_bumper.wasPressed() || xGamepad2.left_bumper.wasPressed()) {
-                motor.increment(-INCREMENT, -0.75);
-            } else if (xGamepad1.right_bumper.wasPressed() || xGamepad2.right_bumper.wasPressed()) {
-                motor.increment(INCREMENT, -0.75);
-            }
+        if (xDS.xGamepad.left_bumper.wasPressed()) {
+            motor.increment(-INCREMENT, -0.75);
+        } else if (xDS.xGamepad.right_bumper.wasPressed()) {
+            motor.increment(INCREMENT, -0.75);
+        }
 
-            if (xGamepad1.b.wasPressed() || xGamepad2.b.wasPressed()) {
-                gate1.increment(-2.0 / 15.0);
-                gate2.increment(2.0 / 15.0);
-                scheduler.setEvent(1000L, "resetGate", () -> {
-                    gate1.setPosition(1-START_ANGLE);
-                    gate2.setPosition(START_ANGLE);
-                });
-            }
+        if (xDS.xGamepad.b.wasPressed()) {
+            gate1.increment(-2.0 / 15.0);
+            gate2.increment(2.0 / 15.0);
+            scheduler.setEvent(1000L, "resetGate", () -> {
+                gate1.setPosition(1-START_ANGLE);
+                gate2.setPosition(START_ANGLE);
+            });
+        }
 
-            if(xGamepad1.x.isDown() || xGamepad2.x.isDown()){
-                motor.setIndefiniteRotation(0.1);
-            } else if(xGamepad1.x.wasReleased() || xGamepad2.x.wasReleased()){
-                motor.reset();
-            }
-        } else {
-            if (xGamepad1.left_bumper.wasPressed()) {
-                motor.increment(-INCREMENT, -0.75);
-            } else if (xGamepad1.right_bumper.wasPressed()) {
-                motor.increment(INCREMENT, -0.75);
-            }
-
-            if (xGamepad1.right_trigger >= 0.25) {
-                gate1.increment(-2.0 / 15.0);
-                gate2.increment(2.0 / 15.0);
-                scheduler.setEvent(1000L, "resetGate", () -> {
-                    gate1.setPosition(1-START_ANGLE);
-                    gate2.setPosition(START_ANGLE);
-                });
-            }
-
-            if(xGamepad1.x.isDown()){
-                motor.setIndefiniteRotation(0.1);
-            } else if(xGamepad1.x.wasReleased()){
-                motor.reset();
-            }
+        if(xDS.xGamepad.x.isDown()){
+            motor.setIndefiniteRotation(0.1);
+        } else if(xDS.xGamepad.x.wasReleased()){
+            motor.reset();
         }
     }
 }

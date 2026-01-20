@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import java.util.ArrayList;
 
-import robotx.stx_libraries.components.XGamepad;
+import robotx.stx_libraries.components.XDriverStation;
 import robotx.stx_libraries.util.Scheduler;
 
 /**
@@ -15,23 +15,22 @@ import robotx.stx_libraries.util.Scheduler;
  * Created by Nicholas on 11/3/16.
  */
 public abstract class XOpMode extends OpMode {
+
+    public final XRobotContext ctx = new XRobotContext(this);
+
     /**
      * List of XModules which runs throughout OpMode.
      */
-    public ArrayList<XModule> activeModules = new ArrayList<>();
+    public final ArrayList<XModule> activeModules = ctx.activeModules;
     /**
      * Modules which run only in the initialization process (i.e. modules which do not call start(), loop(), or stop())
      */
-    public ArrayList<XModule> inactiveModules = new ArrayList<>();
+    public final ArrayList<XModule> inactiveModules = ctx.inactiveModules;
 
     /**
-     * XGamepad object for the primary OpMode gamepad.
+     * XGamepadSystem object for OpMode which combines both gamepads and updates according to dualPLayer setting.
      */
-    public final XGamepad xGamepad1 = new XGamepad();
-    /**
-     * XGamepad object for the secondary OpMode gamepad.
-     */
-    public final XGamepad xGamepad2 = new XGamepad();
+    public final XDriverStation xDS = new XDriverStation();
 
     /**
      * Scheduling object used throughout OpMode.
@@ -52,19 +51,17 @@ public abstract class XOpMode extends OpMode {
     @Override
     public void init() {
         initModules();
-        xGamepad1.update(gamepad1);
-        xGamepad2.update(gamepad2);
-        for (XModule module : activeModules) {
+        
+        xDS.init(gamepad1, gamepad2);
+        for (XModule module : ctx.activeModules) {
             module.init();
             module.scheduler = scheduler;
-            module.xGamepad1 = xGamepad1;
-            module.xGamepad2 = xGamepad2;
+            module.xDS = xDS;
         }
-        for (XModule module : inactiveModules) {
+        for (XModule module : ctx.inactiveModules) {
             module.init();
             module.scheduler = scheduler;
-            module.xGamepad1 = xGamepad1;
-            module.xGamepad2 = xGamepad2;
+            module.xDS = xDS;
         }
     }
 
@@ -77,13 +74,12 @@ public abstract class XOpMode extends OpMode {
     public void init_loop() {
         scheduler.loop();
 
-        xGamepad1.update();
-        xGamepad2.update();
+        xDS.update();
 
-        for (XModule module : activeModules) {
+        for (XModule module : ctx.activeModules) {
             module.init_loop();
         }
-        for (XModule module : inactiveModules) {
+        for (XModule module : ctx.inactiveModules) {
             module.init_loop();
         }
     }
@@ -95,7 +91,7 @@ public abstract class XOpMode extends OpMode {
      */
     @Override
     public void start() {
-        for (XModule module : activeModules) {
+        for (XModule module : ctx.activeModules) {
             module.start();
         }
     }
@@ -108,11 +104,9 @@ public abstract class XOpMode extends OpMode {
     @Override
     public void loop() {
         scheduler.loop();
+        xDS.update();
 
-        xGamepad1.update();
-        xGamepad2.update();
-
-        for (XModule module : activeModules) {
+        for (XModule module : ctx.activeModules) {
             module.loop();
         }
     }
@@ -124,8 +118,17 @@ public abstract class XOpMode extends OpMode {
      */
     @Override
     public void stop() {
-        for (XModule module : activeModules) {
+        for (XModule module : ctx.activeModules) {
             module.stop();
         }
+    }
+
+    public void registerModule(XModule module){
+        ctx.registerModule(module, XRobotContext.ModuleType.ACTIVE);
+    }
+
+
+    public void registerModule(XModule module, XRobotContext.ModuleType type){
+        ctx.registerModule(module, type);
     }
 }

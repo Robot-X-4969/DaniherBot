@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+
 import robotx.stx_libraries.util.Scheduler;
 import robotx.stx_libraries.util.Stopwatch;
 
@@ -27,12 +29,14 @@ public class XMotor {
     private boolean fixed = false;
     private int targetPosition = 0;
     private int position = 0;
+    public double currentRPM = 0;
 
     private final Stopwatch stopWatch = new Stopwatch();
 
     private boolean brakes = true;
     private boolean reverse = false;
     private boolean safe = false;
+    private int holdRange = 0;
     private double safeRPM = 100;
 
     private long tpr = 1500;
@@ -46,7 +50,7 @@ public class XMotor {
     private int min;
     private int max;
 
-    private boolean estimateMotorRPM = false;
+    private boolean estimateRPM = false;
 
     /**
      * XMotor Constructor
@@ -145,10 +149,8 @@ public class XMotor {
         motor.setPower(power);
     }
 
-    //Stops the motor; sets power to 0, stops timer, and changes mode to indefinite
-
     /**
-     * Stops the motor.
+     * Stops the motor; sets power to 0, stops timer, and changes mode to indefinite
      */
     public void stop() {
         power = 0;
@@ -267,15 +269,53 @@ public class XMotor {
      */
     public void setRPM(double rpm) {
         this.rpm = rpm;
-        setPower(rpm * rpmCoef);
+        if(estimateRPM){
+            setPower(rpm * rpmCoef);
+        } else {
+            motor.setVelocity(rpm / 60, AngleUnit.DEGREES);
+        }
     }
 
+    /**
+     * Estimates the current RPM of the motor and adjusts the coefficient accordingly.
+     * @return Returns the current RPM of the motor.
+     */
+    public double calculateRPM(){
+        final int tickDiff = Math.abs(position - lastPos);
+        final double r = ((double) tickDiff) / tpr;
+        final long timeDiff = rpmStopwatch.elapsedMillis();
+        currentRPM = r / ((double) timeDiff) * 1000 * 60;
+
+        if (safe) {
+            if (currentRPM < safeRPM * Math.abs(power)) {
+                stop();
+                return currentRPM;
+            }
+        }
+        if (!rpmCoefSet && power != 0) {
+            rpmCoef = Math.abs(power / currentRPM);
+        }
+
+        if(rpm != 0 && estimateRPM){
+            setPower(rpm * rpmCoef);
+        }
+        return currentRPM;
+    }
+
+    /**
+     * Toggles the use of manual RPM estimation vs. REV supported RPM management.
+     */
     public void toggleRPMEstimation() {
-        estimateMotorRPM = !estimateMotorRPM;
+        estimateRPM = !estimateRPM;
     }
 
+    /**
+     * Sets the use of manual RPM estimation vs. REV supported RPM management.
+     *
+     * @param value The value to set RPM estimation to.
+     */
     public void setRPMEstimation(boolean value) {
-        estimateMotorRPM = value;
+        estimateRPM = value;
     }
 
     /**
@@ -429,6 +469,12 @@ public class XMotor {
         setPower(power);
     }
 
+    /**
+     * Holds the motor at target position, acting as a servo.
+     *
+     * @param hold Amount of encoder ticks to hold within.
+     * @param power Power of movements.
+     */
     public void hold(int hold, double power) {
         getPosition();
         final int error = targetPosition - position;
@@ -440,11 +486,15 @@ public class XMotor {
 
         final double out = Math.min(power, Math.max(-power, 0.006 * error));
         setPower(out);
+    }
 
-        op.telemetry.addData("pos", position);
-        op.telemetry.addData("target", targetPosition);
-        op.telemetry.addData("power", out);
-        op.telemetry.update();
+    /**
+     * Sets the motor's servo functionality.
+     *
+     * @param hold Value to set the motor's servo functionality to.
+     */
+    public void setHold(int hold){
+        holdRange = hold;
     }
 
 
@@ -553,11 +603,19 @@ public class XMotor {
         this.max = max;
     }
 
+    /**
+     * Sets the motor to follow the position of another motor.
+     *
+     * @param motor Motor to follow.
+     */
     public void follow(XMotor motor) {
         this.following = motor;
         setFixedRotation(motor.getPosition(), motor.getPower());
     }
 
+    /**
+     * Stops following any set motors.
+     */
     public void unfollow() {
         this.following = null;
     }
@@ -570,6 +628,7 @@ public class XMotor {
     public void refreshPosition(boolean milestone) {
         if (milestone) {
             lastPos = position;
+            rpmStopwatch.reset();
         }
         position = motor.getCurrentPosition();
     }
@@ -583,6 +642,10 @@ public class XMotor {
      */
     public void loop() {
         refreshPosition(false);
+
+        if(holdRange != 0){
+            hold(holdRange, 0.5);
+        }
 
         if (following != null) {
             final int followingPosition = following.getPosition();
@@ -606,30 +669,17 @@ public class XMotor {
             stop();
             return;
         }
+
         //If motor isn't moving
         if (fixed && !motor.isBusy()) {
             stop();
             return;
         }
 
-        if (Math.abs(power) > 0.15 && rpmStopwatch.timerDone() && (!rpmCoefSet || safe)) {
-            final int tickDiff = Math.abs(position - lastPos);
-            final double r = ((double) tickDiff) / tpr;
-            final long timeDiff = rpmStopwatch.elapsedMillis();
-            final double currentRPM = r / ((double) timeDiff) * 1000 * 60;
-
-            rpmStopwatch.reset();
+        // Calculates RPM
+        if (rpmStopwatch.timerDone()) {
+            calculateRPM();
             refreshPosition(true);
-            if (safe) {
-                if (currentRPM < safeRPM * Math.abs(power)) {
-                    stop();
-                    return;
-                }
-            }
-            if (!rpmCoefSet) {
-                rpmCoef = power / currentRPM;
-            }
         }
-
     }
 }

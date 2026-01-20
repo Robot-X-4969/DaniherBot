@@ -135,8 +135,8 @@ public class TankOrientationDrive extends XModule {
 
     /// Refreshes the variables tracking the joystick movements.
     public void refreshSticks() {
-        y = xGamepad1.left_stick_y;
-        r = xGamepad1.right_stick_x;
+        y = xDS.xGamepad1.left_stick_y;
+        r = xDS.xGamepad1.right_stick_x;
     }
 
     /**

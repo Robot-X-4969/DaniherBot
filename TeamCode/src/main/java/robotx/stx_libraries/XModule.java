@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import java.util.ArrayList;
 import java.util.List;
 
-import robotx.stx_libraries.components.XGamepad;
 import robotx.stx_libraries.components.XMotor;
+import robotx.stx_libraries.components.XDriverStation;
 import robotx.stx_libraries.util.Scheduler;
 
 /**
@@ -21,12 +21,7 @@ public abstract class XModule {
     public final OpMode opMode;
     /// OpMode's scheduling object.
     public Scheduler scheduler;
-    /// XGamepad object for the primary OpMode gamepad.
-    public XGamepad xGamepad1 = new XGamepad();
-    /// XGamepad object for the secondary OpMode gamepad.
-    public XGamepad xGamepad2 = new XGamepad();
-
-    public boolean dualPlayer = true;
+    public XDriverStation xDS = new XDriverStation();
 
     /// List of module's motors to be called every loop.
     public final List<XMotor> loopMotors = new ArrayList<>();
@@ -42,11 +37,10 @@ public abstract class XModule {
         opMode = op;
     }
 
-    /// Update method which refreshes xGamepad objects.\
+    /// Update method which refreshes xGamepad objects.
     public void update() {
         scheduler.loop();
-        xGamepad1.update(opMode.gamepad1);
-        xGamepad2.update(opMode.gamepad2);
+        xDS.update();
     }
 
     /// Method called on OpMode initialization.
@@ -69,9 +63,6 @@ public abstract class XModule {
 
     /// Method which handles inputs.
     public void control_loop() {
-        if(xGamepad1.back.wasPressed()){
-            dualPlayer = !dualPlayer;
-        }
     }
 
     /**

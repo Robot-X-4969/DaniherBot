@@ -2,6 +2,8 @@ package robotx.stx_libraries.components;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+import robotx.stx_libraries.util.Button;
+
 /**
  * XGamepad Class
  * <p>
@@ -106,8 +108,8 @@ public class XGamepad {
         dpad_down.update(gamepad.dpad_down);
         dpad_left.update(gamepad.dpad_left);
         dpad_right.update(gamepad.dpad_right);
-        a.update(gamepad.a);
-        b.update(gamepad.b);
+        a.update(gamepad.a && !gamepad.start);
+        b.update(gamepad.b && !gamepad.start);
         x.update(gamepad.x);
         y.update(gamepad.y);
         guide.update(gamepad.guide);
@@ -117,9 +119,5 @@ public class XGamepad {
         right_bumper.update(gamepad.right_bumper);
         left_stick_button.update(gamepad.left_stick_button);
         right_stick_button.update(gamepad.right_stick_button);
-
-        if(start.isDown()){
-            a.update(false);
-        }
     }
 }

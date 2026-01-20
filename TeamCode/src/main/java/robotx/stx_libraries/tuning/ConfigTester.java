@@ -93,44 +93,44 @@ public class ConfigTester extends XModule {
      */
     @Override
     public void control_loop() {
-        if (xGamepad1.dpad_down.wasPressed() || xGamepad1.dpad_left.wasPressed()) {
+        if (xDS.xGamepad1.dpad_down.wasPressed() || xDS.xGamepad1.dpad_left.wasPressed()) {
             index--;
             if (index < 0) {
                 index = motors.length;
             }
         }
-        if (xGamepad1.dpad_up.wasPressed() || xGamepad1.dpad_right.wasPressed()) {
+        if (xDS.xGamepad1.dpad_up.wasPressed() || xDS.xGamepad1.dpad_right.wasPressed()) {
             index++;
         }
-        if(xGamepad1.left_bumper.wasPressed() || xGamepad1.right_bumper.wasPressed()){
+        if(xDS.xGamepad1.left_bumper.wasPressed() || xDS.xGamepad1.right_bumper.wasPressed()){
             if(servos.length != 0 && motors.length != 0){
                 servoMode = !servoMode;
             }
         }
 
         // Powers motors based off of button input, incrementing with index
-        if (xGamepad1.y.isDown()) {
+        if (xDS.xGamepad1.y.isDown()) {
             if(servoMode){
                 toggleServo(0);
             } else {
                 powerMotor(0);                
             }
         }
-        if (xGamepad1.b.isDown()) {
+        if (xDS.xGamepad1.b.isDown()) {
             if(servoMode){
                 toggleServo(1);
             } else {
                 powerMotor(1);
             }
         }
-        if (xGamepad1.a.isDown()) {
+        if (xDS.xGamepad1.a.isDown()) {
             if(servoMode){
                 toggleServo(2);
             } else {
                 powerMotor(2);
             }
         }
-        if (xGamepad1.x.isDown()) {
+        if (xDS.xGamepad1.x.isDown()) {
             if(servoMode){
                 toggleServo(3);
             } else {

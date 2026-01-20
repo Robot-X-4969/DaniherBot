@@ -17,8 +17,7 @@ public class DriveTester extends XOpMode {
 
         super.initModules();
 
-        configTester = new ConfigTester(this, 4, 0);
-        activeModules.add(configTester);
+        registerModule(new ConfigTester(this, 4, 0));
     }
 
     public void init() {

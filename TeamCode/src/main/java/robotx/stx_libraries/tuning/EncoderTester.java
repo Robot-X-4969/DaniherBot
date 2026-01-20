@@ -71,31 +71,31 @@ public class EncoderTester extends XModule {
      */
     @Override
     public void control_loop(){
-        if(xGamepad1.left_bumper.wasPressed()){
+        if(xDS.xGamepad1.left_bumper.wasPressed()){
             unit /= 10;
             if(unit < 1){
                 unit = 1;
             }
         }
-        if(xGamepad1.right_bumper.wasPressed()){
+        if(xDS.xGamepad1.right_bumper.wasPressed()){
             unit *= 10;
             if(unit > 1000){
                 unit = 1000;
             }
         }
-        if(xGamepad1.dpad_down.wasPressed()){
+        if(xDS.xGamepad1.dpad_down.wasPressed()){
             motors[index].increment(-unit);
         }
-        if(xGamepad1.dpad_up.wasPressed()){
+        if(xDS.xGamepad1.dpad_up.wasPressed()){
             motors[index].increment(unit);
         }
-        if(xGamepad1.a.wasPressed()){
+        if(xDS.xGamepad1.a.wasPressed()){
             index++;
             if(index >= motors.length){
                 index = 0;
             }
         }
-        if(xGamepad1.b.wasPressed()){
+        if(xDS.xGamepad1.b.wasPressed()){
             index--;
             if(index < 0){
                 index = motors.length-1;

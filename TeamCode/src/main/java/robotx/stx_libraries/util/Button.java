@@ -1,4 +1,4 @@
-package robotx.stx_libraries.components;
+package robotx.stx_libraries.util;
 
 /**
  * Button Class
@@ -11,6 +11,8 @@ public class Button {
     // Recorded button states
     private boolean lastValue = false;
     private boolean currentValue = false;
+
+    private long t = 0;
 
     /**
      * Object intended to handle states of a boolean output button.
@@ -33,6 +35,10 @@ public class Button {
      * @param newValue The current value of the button.
      */
     public void update(boolean newValue) {
+        if(newValue != currentValue){
+            t = System.currentTimeMillis();
+        }
+
         lastValue = currentValue;
         currentValue = newValue;
     }
@@ -67,5 +73,19 @@ public class Button {
      */
     public boolean wasReleased() {
         return lastValue && !currentValue;
+    }
+
+    public long heldDownTime(){
+        if(currentValue){
+            return System.currentTimeMillis() - t;
+        }
+        return 0;
+    }
+
+    public long heldUpTime(){
+        if(currentValue){
+            return 0;
+        }
+        return System.currentTimeMillis() - t;
     }
 }
