@@ -5,9 +5,14 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import java.util.ArrayList;
 import java.util.List;
 
+enum RobotStates {
+    COLLECT, MOVE, SHOOT
+}
 public class XAuton extends LinearOpMode {
     public final XRobotContext ctx = new XRobotContext(this);
     public final List<XModule> modules = ctx.autonomousModules;
+
+
 
     public void initModules(){
     }
