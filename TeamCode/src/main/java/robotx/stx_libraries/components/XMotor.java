@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 import robotx.stx_libraries.util.Scheduler;
+import robotx.stx_libraries.util.Stats;
 import robotx.stx_libraries.util.Stopwatch;
 
 /**
@@ -18,6 +19,14 @@ import robotx.stx_libraries.util.Stopwatch;
  * Created by John Daniher 1/09/25
  */
 public class XMotor {
+
+    public enum RPMMode {
+        NONE,
+        NATIVE,
+        FEEDFORWARD,
+        PID
+    }
+
     private final OpMode op;
     private final String motorPath;
 
@@ -29,18 +38,19 @@ public class XMotor {
     private boolean fixed = false;
     private int targetPosition = 0;
     private int position = 0;
-    public double currentRPM = 0;
 
     private final Stopwatch stopWatch = new Stopwatch();
 
     private boolean brakes = true;
     private boolean reverse = false;
-    private boolean safe = false;
-    private int holdRange = 0;
-    private double safeRPM = 100;
 
-    private long tpr = 1500;
+    private int holdRange = 0;
+
+    private int tpr = 1425;
+    private double freeRPM = 312;
     private double rpm = 0;
+    public RPMMode rpmMode = RPMMode.NONE;
+    public double currentRPM = 0;
 
     private double rpmCoef = 0;
     private boolean rpmCoefSet = false;
@@ -49,8 +59,6 @@ public class XMotor {
 
     private int min;
     private int max;
-
-    private boolean estimateRPM = false;
 
     /**
      * XMotor Constructor
@@ -76,15 +84,16 @@ public class XMotor {
      *
      * @param op        The OpMode in which the motor runs.
      * @param motorPath The name the motor is configured to through the RevHub.
-     * @param tpr       The preset econder ticks per revolution of the motor.
+     * @param tpr       The preset encoder ticks per revolution of the motor.
+     * @param freeRPM   The preset ideal RPM of the motor at full power.
      */
-    public XMotor(OpMode op, String motorPath, long tpr) {
+    public XMotor(OpMode op, String motorPath, int tpr, double freeRPM) {
         this.op = op;
         this.motorPath = motorPath;
         min = Integer.MIN_VALUE;
         max = Integer.MAX_VALUE;
         this.tpr = tpr;
-        safe = true;
+        this.freeRPM = freeRPM;
     }
 
     /**
@@ -115,7 +124,7 @@ public class XMotor {
     }
 
     /**
-     * Returmns teh current power of the motor.
+     * Returns the current power of the motor.
      *
      * @return The current power of the motor.
      */
@@ -124,13 +133,13 @@ public class XMotor {
     }
 
     /**
-     * Returmns teh current power of the motor.
+     * Returns the current power of the motor.
      *
      * @return The current power of the motor.
      */
     public int getPosition() {
         position = motor.getCurrentPosition();
-        return motor.getCurrentPosition();
+        return position;
     }
 
     /**
@@ -211,34 +220,18 @@ public class XMotor {
     }
 
     /**
-     * Toggles the motor's safety system.
-     * <p>
-     * When a motor is "safe", it will power off when it faces severe resistance. Each motor is safe by default.
-     */
-    public void toggleSafe() {
-        safe = !safe;
-    }
-
-    /**
-     * Sets the motor's safety system.
-     * <p>
-     * When a motor is "safe", it will power off when it faces severe resistance. Each motor is safe by default.
-     *
-     * @param safe State to set the safety system to.
-     */
-    public void setSafe(boolean safe) {
-        this.safe = safe;
-    }
-
-    /**
      * Sets the encoder ticks per revolution of the motor.
      * <p>
      * See manufacturer data for values.
      *
      * @param tpr The encoder ticker per revolution of the motor.
      */
-    public void setTPR(long tpr) {
+    public void setTPR(int tpr) {
         this.tpr = tpr;
+    }
+
+    public void setFreeRPM(double freeRPM) {
+        this.freeRPM = freeRPM;
     }
 
     /**
@@ -252,15 +245,6 @@ public class XMotor {
     }
 
     /**
-     * Sets the threshold rpm before the safety system cuts the motor off.
-     *
-     * @param rpm The revolutions per minute to set the safety rpm to.
-     */
-    public void setSafeRPM(double rpm) {
-        safeRPM = rpm;
-    }
-
-    /**
      * Sets the motor to a given RPM.
      * <p>
      * Note: requires that the tpr coefficient be tuned or preset.
@@ -269,53 +253,42 @@ public class XMotor {
      */
     public void setRPM(double rpm) {
         this.rpm = rpm;
-        if(estimateRPM){
-            setPower(rpm * rpmCoef);
-        } else {
-            motor.setVelocity(rpm / 60, AngleUnit.DEGREES);
-        }
     }
 
     /**
      * Estimates the current RPM of the motor and adjusts the coefficient accordingly.
+     *
      * @return Returns the current RPM of the motor.
      */
-    public double calculateRPM(){
+    public double calculateRPM() {
         final int tickDiff = Math.abs(position - lastPos);
         final double r = ((double) tickDiff) / tpr;
         final long timeDiff = rpmStopwatch.elapsedMillis();
         currentRPM = r / ((double) timeDiff) * 1000 * 60;
 
-        if (safe) {
-            if (currentRPM < safeRPM * Math.abs(power)) {
-                stop();
-                return currentRPM;
-            }
-        }
         if (!rpmCoefSet && power != 0) {
             rpmCoef = Math.abs(power / currentRPM);
         }
 
-        if(rpm != 0 && estimateRPM){
-            setPower(rpm * rpmCoef);
-        }
         return currentRPM;
     }
 
-    /**
-     * Toggles the use of manual RPM estimation vs. REV supported RPM management.
-     */
-    public void toggleRPMEstimation() {
-        estimateRPM = !estimateRPM;
-    }
+    private void estimateRPM() {
+        final double error = Math.abs(rpm) - currentRPM;
 
-    /**
-     * Sets the use of manual RPM estimation vs. REV supported RPM management.
-     *
-     * @param value The value to set RPM estimation to.
-     */
-    public void setRPMEstimation(boolean value) {
-        estimateRPM = value;
+        if (rpm == 0) {
+            motor.setPower(0);
+            return;
+        }
+
+        final double out = Stats.bind(0.012 * error, -1.0, 1.0);
+        setPower(out);
+
+        op.telemetry.addData("motor", motorPath);
+        op.telemetry.addData("rpm", currentRPM);
+        op.telemetry.addData("set rpm", rpm);
+        op.telemetry.addData("power", power);
+        op.telemetry.addData("out", out);
     }
 
     /**
@@ -472,7 +445,7 @@ public class XMotor {
     /**
      * Holds the motor at target position, acting as a servo.
      *
-     * @param hold Amount of encoder ticks to hold within.
+     * @param hold  Amount of encoder ticks to hold within.
      * @param power Power of movements.
      */
     public void hold(int hold, double power) {
@@ -484,7 +457,7 @@ public class XMotor {
             return;
         }
 
-        final double out = Math.min(power, Math.max(-power, 0.006 * error));
+        final double out = Stats.bind(0.006 * error, -power, power);
         setPower(out);
     }
 
@@ -493,7 +466,7 @@ public class XMotor {
      *
      * @param hold Value to set the motor's servo functionality to.
      */
-    public void setHold(int hold){
+    public void setHold(int hold) {
         holdRange = hold;
     }
 
@@ -627,10 +600,14 @@ public class XMotor {
      */
     public void refreshPosition(boolean milestone) {
         if (milestone) {
-            lastPos = position;
             rpmStopwatch.reset();
+            lastPos = position;
         }
         position = motor.getCurrentPosition();
+    }
+
+    public void setRPMMode(RPMMode rpmMode) {
+        this.rpmMode = rpmMode;
     }
 
     /**
@@ -643,7 +620,7 @@ public class XMotor {
     public void loop() {
         refreshPosition(false);
 
-        if(holdRange != 0){
+        if (holdRange != 0) {
             hold(holdRange, 0.5);
         }
 
@@ -679,6 +656,23 @@ public class XMotor {
         // Calculates RPM
         if (rpmStopwatch.timerDone()) {
             calculateRPM();
+
+            switch (rpmMode) {
+                case NONE:
+                    break;
+                case NATIVE:
+                    motor.setVelocity(rpm * 6, AngleUnit.DEGREES);
+                    break;
+                case FEEDFORWARD:
+                    if (rpm != 0) {
+                        setPower(rpm * rpmCoef);
+                    }
+                    break;
+                case PID:
+                    estimateRPM();
+                    break;
+            }
+
             refreshPosition(true);
         }
     }

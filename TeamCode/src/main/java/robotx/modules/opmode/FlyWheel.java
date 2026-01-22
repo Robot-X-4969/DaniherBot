@@ -8,9 +8,8 @@ import robotx.stx_libraries.components.XServo;
 
 public class FlyWheel extends XModule {
 
-    private static final double RPMCOEFF = 0.007;
     private static final int[] MOTOR_SPEEDS = new int[]{
-            0, 30, 60
+            0, 20, 60
     };
 
     private static final double[] SERVO_POSITIONS = new double[]{
@@ -28,19 +27,17 @@ public class FlyWheel extends XModule {
 
     @Override
     public void init() {
-        motor1 = new XMotor(opMode, "flywheel1", 1425);
+        motor1 = new XMotor(opMode, "flywheel1", 1425, 1620.0);
         motor1.init();
-        motor1.toggleSafe();
-        motor1.setRPMCoefficient(RPMCOEFF);
         motor1.setBrakes(false);
+        motor1.setRPMMode(XMotor.RPMMode.PID);
         loopMotors.add(motor1);
 
-        motor2 = new XMotor(opMode, "flywheel2", 1425);
+        motor2 = new XMotor(opMode, "flywheel2", 1425, 1620.0);
         motor2.init();
-        motor2.toggleSafe();
-        motor2.setRPMCoefficient(RPMCOEFF);
         motor2.setBrakes(false);
-        loopMotors.add(motor2);
+        motor2.setRPMMode(XMotor.RPMMode.PID);
+        //loopMotors.add(motor2);
 
         servo1 = new XServo(opMode, "hood1", SERVO_POSITIONS[0]);
         servo1.init();
@@ -51,14 +48,6 @@ public class FlyWheel extends XModule {
         increment(0);
 
         super.init();
-    }
-
-    @Override
-    public void loop(){
-        super.loop();
-        opMode.telemetry.addData("flywheel1",  motor1.calculateRPM());
-        opMode.telemetry.addData("flywheel2",  motor2.calculateRPM());
-        opMode.telemetry.update();
     }
 
     @Override
