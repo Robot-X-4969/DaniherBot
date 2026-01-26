@@ -19,7 +19,7 @@ public class DriveForward extends XAuton {
 
     @Override
     public void run(){
-        driveSystem.drive(-0.5);
+        driveSystem.drive(-0.2);
         sleep(1000);
         stop();
     }

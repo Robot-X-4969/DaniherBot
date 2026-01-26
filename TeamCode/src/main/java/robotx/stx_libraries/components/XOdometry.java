@@ -11,10 +11,12 @@ public class XOdometry {
 
     private GoBildaPinpointDriver device;
     //Offset from center of robot
-    final double xOffset = 0.0;
-    final double yOffset = 0.0;
+    final double xOffset = 38.0;
+    final double yOffset = 138.0;
 
     OpMode op;
+
+    Pose2D robotPosition;
 
     public XOdometry(OpMode op){
         this.op = op;
@@ -30,12 +32,13 @@ public class XOdometry {
         device.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.REVERSED);
 
         device.resetPosAndIMU();
+
     }
 
     public void getData(){
         update();
-        op.telemetry.addData("X:", getX());
-        op.telemetry.addData("Y:", getY());
+        //op.telemetry.addData("X:", getX());
+        //op.telemetry.addData("Y:", getY());
     }
 
     public void update(){
@@ -65,6 +68,12 @@ public class XOdometry {
     public void loop(){
         getData();
     }
+
+    public GoBildaPinpointDriver getDevice(){
+        return device;
+    }
+
+
 
 
 }

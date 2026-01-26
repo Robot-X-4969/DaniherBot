@@ -64,4 +64,17 @@ public class Spindexer extends XModule {
             motor.reset();
         }
     }
+
+    public void autoIncrement(){
+        motor.increment(INCREMENT, -0.75);
+    }
+
+    public void autoShoot(){
+        gate1.increment(-2.0 / 15.0);
+        gate2.increment(2.0 / 15.0);
+        scheduler.setEvent(1000L, "resetGate", () -> {
+            gate1.setPosition(1-START_ANGLE);
+            gate2.setPosition(START_ANGLE);
+        });
+    }
 }

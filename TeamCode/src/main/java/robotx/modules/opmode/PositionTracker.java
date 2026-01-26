@@ -4,6 +4,10 @@ package robotx.modules.opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+
 import robotx.stx_libraries.XModule;
 import robotx.stx_libraries.components.XOdometry;
 import robotx.stx_libraries.util.Vector;
@@ -17,13 +21,21 @@ public class PositionTracker extends XModule {
 
     XOdometry odometry;
 
-    Vector vecA;
-    Vector vecB;
-    Vector vecC;
+    StartPosition startPosition = StartPosition.BLUEBack;
 
-    Vector[] vectorA;
-    Vector[] vectorB;
-    Vector[] vectorC;
+    //large triangle
+    Vector vecA = new Vector(72.0, 72.0);
+    Vector vecB = new Vector(0.0, 0.0);
+    Vector vecC = new Vector(72.0, -72.0);
+
+    //small triangle
+    Vector vecD = new Vector(-72.0, -24.0);
+    Vector vecE = new Vector(-48.0, 0.0);
+    Vector vecF = new Vector(-72.0, 24.0);
+
+    //goals
+    Vector blueGoal = new Vector(60.0, -60.0);
+    Vector redGoal = new Vector(60.0, 60.0);
 
 
     public PositionTracker(OpMode op){
@@ -34,6 +46,16 @@ public class PositionTracker extends XModule {
     @Override
     public void init(){
         odometry.init();
+        if(startPosition == StartPosition.BLUEBack) {
+            odometry.getDevice().setPosition(new Pose2D(DistanceUnit.INCH, -63.0, -24.0, AngleUnit.DEGREES, 0.0));;
+        } else if(startPosition == StartPosition.REDBack){
+            odometry.getDevice().setPosition(new Pose2D(DistanceUnit.INCH, -63.0, 24.0, AngleUnit.DEGREES, 0.0));
+        } else if(startPosition == StartPosition.BLUECorner){
+            odometry.getDevice().setPosition(new Pose2D(DistanceUnit.INCH, 51.0, -51.0, AngleUnit.DEGREES, 180.0));
+        } else if(startPosition == StartPosition.REDCorner){
+            odometry.getDevice().setPosition(new Pose2D(DistanceUnit.INCH, 51.0, 51.0, AngleUnit.DEGREES, 180.0));
+        }
+
     }
 
     public boolean checkZone1(){
@@ -43,7 +65,7 @@ public class PositionTracker extends XModule {
 
     public boolean checkZone2(){
 
-        return false;
+        return checkInTriangle(new Vector(odometry.getX(), odometry.getY()), vecD, vecE, vecF);
     }
 
     public boolean checkInTriangle(Vector p, Vector a, Vector b, Vector c){
@@ -67,7 +89,14 @@ public class PositionTracker extends XModule {
     @Override
     public void loop(){
         super.loop();
-
         odometry.loop();
+    }
+
+    public double getX(){
+        return odometry.getX();
+    }
+
+    public double getY(){
+        return odometry.getY();
     }
 }

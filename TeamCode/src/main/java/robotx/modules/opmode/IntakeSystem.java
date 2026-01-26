@@ -27,16 +27,15 @@ public class IntakeSystem extends XModule {
     }
 
     @Override
-    public void control_loop() {
-        super.control_loop();
+    public void loop(){
+        super.loop();
+        crServo1.rotate(1.0);
+        crServo2.rotate(-1.0);
+    }
 
-        if(xDS.xGamepad.a.isDown()){
-            crServo1.rotate(1.0);
-            crServo2.rotate(-1.0);
-        } else {
-            crServo1.rotate(0.0);
-            crServo2.rotate(-0.0);
-        }
+    public void stop(){
+        crServo1.rotate(0.0);
+        crServo2.rotate(0.0);
     }
 
 }

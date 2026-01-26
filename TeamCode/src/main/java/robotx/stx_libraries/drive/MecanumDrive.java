@@ -49,7 +49,7 @@ public class MecanumDrive extends XModule {
     /**
      * The current percent power of the motors, ranging -1 to 1.
      */
-    public double power = 0.75;
+    public double power = 1.00;
 
     /// Initialization function. This method, by default, initializes the motors
     @Override
@@ -134,7 +134,7 @@ public class MecanumDrive extends XModule {
     public void rotate(double power) {
         r = power;
         powerMotors(1);
-    }
+    };
 
     /// Stops all motors of the drive train.
     public void stopMotors(){
